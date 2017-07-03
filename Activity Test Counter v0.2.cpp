@@ -14,10 +14,11 @@ using namespace std;
 
 // Almacenamiento de tiempos en milisegundos
 long long int tiempos[100000];
-// Promedio de timpos actividad/inactividad
+// Promedio de tiempos actividad/inactividad
 long long int PromAct, PromInact;
 
 string RegNombre, 		// Nombre del registro actual
+	   RutaRegistro,		// Ruta en donde se guardará el archivo de salida
 	   NombreControl,   // Nombre de identificación del animal
 	   ExpMes,			// Mes en que se realizó el experimento
 	   ExpDia,			// Día en que se realizó el experimento
@@ -47,6 +48,7 @@ string Formato(int x, int n){
 }
 
 string FormatoReloj(long long int t){
+	// Recibe el tiempo en milisegundos como entero y lo convierte en cadena con formato reloj
 	int horas, minutos, segundos, mili;
 	mili = t%1000;
 	t /= 1000;
@@ -60,8 +62,23 @@ string FormatoReloj(long long int t){
 	return final;
 }
 
+void SolicitarFecha(){
+	cout << "    Ingresa la fecha en que se realiz\242 el experimento" << endl
+		 << "    D\241a, mes y a\244o a dos d\241gitos y separados por un espacio: ";
+	cin >> ExpDia >> ExpMes >> ExpAno;
+	return;
+}
+
+void Cabecera(){
+	system("cls");
+	cout << "    ----------           Activity Test Counter v0.2           ----------" << endl
+		 << endl
+		 << "                                  Conteo                                " << endl
+		 << endl;
+}
+
 double PorcentajeActividad(){
-	// Caculamos el porcentaje de tiempo de actividad
+	// Calculamos el porcentaje de tiempo de actividad
 	long long int actual;
 	TiempoActivo = TiempoTotal = 0;
 	int cont = 0, cont2 = 0;
@@ -103,18 +120,16 @@ double PorcentajeActividad(){
 }
 
 void Registrar(){
-	// Mensaje al usuario de inicio de guardado
-	cout << "    Guardando..." << endl;
-	
-	double pcActivo = PorcentajeActividad();
 	// Creamos la variable que será nuestro archivo
 	ofstream archivo;
 	// Abrimos nuestro archivo, está listo para escribir en él
 	archivo.open(RegNombre);
 	
-	// Calculamos el porcentaje de actividad e inactividad
-	
+	// Calculamos el porcentaje de actividad	
+	double pcActivo = PorcentajeActividad();
+	// Calculamos el porcentaje de inactividad
 	double pcInactivo = 100 - pcActivo;
+	// Determinamos el tiempo a la primer inmovilidad 
 	int tPrimero = tiempos[1];
 
 	// Mostramos un resumen de los datos
@@ -137,7 +152,7 @@ void Registrar(){
 			<< "Tiempo a primera inactividad: " << FormatoReloj(tPrimero) << endl << endl
 			
 			<< "Mayor periodo de actividad: " << FormatoReloj(MayAct) << endl
-			<< "Mayor periodo de inactivivdad: " << FormatoReloj(MayInact) << endl << endl
+			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl << endl
 			
 			<< "Promedio de tiempo activo: " << FormatoReloj(PromAct) << endl
 			<< "Promedio de tiempo inactivo: " << FormatoReloj(PromInact) << endl << endl;
@@ -168,17 +183,17 @@ void Registrar(){
 		}
 		archivo << tiempos[i] << endl;
 	}
-	archivo << endl << endl << "Registro realizado con Activity Test Counter v0.1 - rivel_co" << endl
+	archivo << endl << endl << "Registro realizado con Activity Test Counter v0.2 - rivel_co" << endl
 			<< "Fin del reporte" << endl;
 	// Terminamos de escribir y cerramos nuestro archivo
 	archivo.close();
-	
-	// Mensaje al usuario de que terminó el guardado
-	cout << "    Guardado finalizado" << endl << endl;
+
 	return;
 }
 
 void IniciarConteo(){
+	Cabecera();
+
 	// Variables para medir el tiempo
 	li freq, t1, t2, t3;
 	int i; // Para el ciclo
@@ -187,57 +202,74 @@ void IniciarConteo(){
 	char letra;
 	
 	// Mensaje al usuario de espera
-	cout << "    Presiona cualquier tecla cuando comience el video" << endl << endl
+	cout << "    El archivo se guardar\240 en la carpeta: " << endl
+		 << "       " << RutaRegistro << endl
+		 << "    y en el archivo: " << endl
+		 << "       " << RegNombre << endl
+		 << endl 
+	     << "    Presiona cualquier tecla cuando comience el video" << endl 
+	     << endl
 		 << "    Cada que el animal cambie de estado activo/inactivo presiona" << endl
-		 << "    cualquier tecla excepto " << CharSalida << endl << endl
-		 << "    Cuando quieras terminar el registro presiona el caracter " << CharSalida << endl << endl;
+		 << "    cualquier tecla excepto " << CharSalida << endl 
+		 << endl
+		 << "    Recibir\240s un color de confirmaci\242n del estado del animal" << endl
+		 << "       Texto verde -> estado activo" << endl
+		 << "       Texto rojo  -> estado inactivo" << endl
+		 << endl
+		 << "    Cuando quieras terminar el registro presiona el caracter " << CharSalida << endl
+		 << endl
+		 << "    Esperando el comienzo de conteo ...";
+	RegNombre.insert(0, RutaRegistro);
+	// Se indica el tiempo 0
+	tiempos[0] = 0;
+	// Declaración de la bandera de cambio de estados
+	bool cambio = true;
 
-	cout << "    Esperando el comienzo de conteo ...";
-	
 	// Obtenemos la frecuencia
 	QueryPerformanceFrequency(&freq);
 	
-	// Comienza a contar y se indica el tiempo 0
-	letra  = getch();
+	// Comienza a contar en cuanto se reciba entrada
+	letra = getch();
 	QueryPerformanceCounter(&t3);
-	tiempos[0] = 0;
 	
 	// Mensaje al usuario de grabación
-	cout << endl << "    Contando ...";
+	cout << "\n    Contando ...\n";
 	
 	// Mientras no excedamos 100000 entradas y no ingresemos el caracter de fin
 	for (i=1; letra != CharSalida && i < 100000; i++){
 		QueryPerformanceCounter(&t1);		// Definimos el t1
+		if (cambio){	// Cambio en la bandera
+			system("color 0a");		// Color verde = activo
+			cambio = false;
+		} else {
+			system("color 0c");		// Color rojo = inactivo
+			cambio = true;
+		}
 		letra = getch();					// En espera de presionar el botón
 		QueryPerformanceCounter(&t2);		// Definimos el t2
 		// Calculamos la diferencia de tiempos, en milisegundos y según la frecuencia
 		tiempos[i] = (t2.QuadPart - t1.QuadPart) * 1000.0 / freq.QuadPart;
 	}
 	
+	system("color 07");		// Regresamos al blanco y negro
+
+	/*	El primer dígito es el color del fondo y el segundo el del texto
+
+	0 = Negro       8 = Gris
+	1 = Azul        9 = Azul claro
+	2 = Verde       A = Verde claro
+	3 = Aguamarina  B = Aguamarina claro
+	4 = Rojo        C = Rojo claro
+	5 = Púrpura     D = Púrpura claro
+	6 = Amarillo    E = Amarillo claro
+	7 = Blanco      F = Blanco brillante	*/	
+
+	// Determinamos la cantidad de cambios de estado
 	TiemposCont = i;
 	
 	// Mensaje al usuario de fin del conteo
 	cout << endl << "    Conteo terminado" << endl << endl;
-	
-	Registrar();
-}
-
-void SolicitarFecha(){
-	cout << "    Ingresa la fecha en que se realiz\242 el experimento" << endl
-		 << "    D\241a, mes y a\244o a dos d\241gitos y separados por un espacio: ";
-	cin >> ExpDia >> ExpMes >> ExpAno;
 	return;
-}
-
-void Cabecera(){
-	system("cls");
-	cout << "------           Activity Test Counter v0.1 por rivel_co           ------" << endl
-		 << endl
-		 << "                                  Conteo                                 " << endl
-		 //<< "     1.- Registrar varios animales de una misma sesi\242n" << endl
-		 //<< "     2.- Registrar varios animales de sesiones distintas"  << endl
-		 << endl;
-		 //<< "     Elecci\242n: ";
 }
 
 void Conteo(){
@@ -313,13 +345,23 @@ void Conteo(){
 		// Nombre del archivo de salida
 		RegNombre = ExpDia + '-' + ExpMes + '-' + ExpAno + ' ' + TipoExperimento + ' ' + NombreControl;
 		// Extensión del archivo de salida
-		RegNombre.append(".txt");
+		RegNombre += ".txt";
 		
-		Cabecera();
-		cout << "    El registro se guardar\240 en el archivo " << RegNombre << endl
-			 << "    y en la misma carpeta en donde ejecutaste este programa" << endl << endl;
-		
+		// Creación de la ruta del archivo de salida
+		RutaRegistro = "Registros";
+		CreateDirectory(RutaRegistro.c_str(), NULL);
+		RutaRegistro += '/' + TipoExperimento;
+		CreateDirectory(RutaRegistro.c_str(), NULL);
+		RutaRegistro += '/' + ExpDia + '-' + ExpMes + '-' + ExpAno;
+		CreateDirectory(RutaRegistro.c_str(), NULL);
+		RutaRegistro += '/';
+
 		IniciarConteo();
+		// Mensaje al usuario de inicio de guardado
+		cout << "    Guardando..." << endl;
+		Registrar();	// Guardamos
+		// Mensaje al usuario de que terminó el guardado
+		cout << "    Guardado finalizado" << endl << endl;
 
 		char otro;
 		cout << "    \250Realizar otro registro? (S/N): ";
@@ -329,9 +371,104 @@ void Conteo(){
 	return;	
 }
 
+void SobreElPrograma(){
+	// Limpiamos la pantalla
+	system("cls");
+
+	cout << "    ----------           Activity Test Counter v0.2           ----------" << endl
+		 << endl
+		 << endl
+		 << "                        Sobre la funci\242n del programa" << endl
+		 << endl
+		 << "    El programa eval\243a distintas estad\241sticas sobre el tiempo de" << endl
+		 << "    actividad e inactividad de un animal experimental en distintas pruebas" << endl
+		 << "    de conducta. La versi\242n actual est\240 especialmente enfocada para" << endl
+		 << "        TST - Tail Suspension Test" << endl
+		 << "        FST - Forced Simming Test" << endl
+		 << "    aunque el m\202todo de funcionamiento puede aplicarse tambi\202n a" << endl
+		 << "    otras pruebas como Plus Maze"
+		 << endl
+		 << endl
+		 << "                      Sobre el m\202todo de funcionamiento" << endl
+		 << endl
+		 << "    Para la utilizaci\242n del programa se debe estar observando la prueba" << endl
+		 << "    al mismo momento en que se ejecuta el conteo." << endl
+		 << "    Una vez que la prueba comienza, el usuario deber\240 pulsar una tecla" << endl
+		 << "    cada que el animal cambia de estado inactivo/activo." << endl
+		 << "    Para el an\240lisi se da por hecho que el sujeto de prueba comienza con" << endl
+		 << "    un estado de actividad." << endl
+		 << "    El programa mide el tiempo en que dura el animal en cada estado y en base" << endl
+		 << "    a ello realiza el an\240lisis." 
+		 << endl
+		 << endl
+		 << "                       Sobre las estad\241sticas evaluadas" << endl
+		 << endl
+		 << "    Las estad\241sticas que se realizan en base a los tiempos de cambio son:" << endl
+		 << "    - Tiempo total registrado" << endl
+		 << "    - Tiempo de evaluaci\242n determinado por el usuario" << endl
+		 << "    - Tiempo total de actividad" << endl
+		 << "    - Tiempo total de inactividad" << endl
+		 << "    - Porcentaje de actividad" << endl
+		 << "    - Porcentaje de inactividad" << endl
+		 << "    - Tiempo de latencia (a primera inactividad)" << endl
+		 << "    - Mayor periodo de actividad" << endl
+		 << "    - Mayor periodo de inactividad" << endl
+		 << "    - Promedio de tiempo activo" << endl
+		 << "    - Promedio de tiempo inactivo" << endl
+		 << "    De forma adicional se agrega un reporte completo de:" << endl
+		 << "    - Tiempo de cambio de estado respecto a la duraci\242n total del registro" << endl
+		 << "    - Registro de deltas de tiempo (tiempo transcurrido en ms entre cada" << endl
+		 << "      cambio de estado" << endl
+		 << endl
+		 << endl
+		 << "                        Sobre los archivos de registro" << endl
+		 << endl
+		 << "    Al finalizar cada registro los archivos se guardan en una ruta como:" << endl
+		 << "       Registros/[Nombre de la prueba]/[Fecha del experimento]/" << endl
+		 << "    a partir de la ruta en donde se ejecut\242 en programa y en archivo:" << endl
+		 << "       [Fecha del experimento] [Nombre de la prueba] [ID del animal].txt" << endl
+		 << endl
+		 << endl
+		 << endl
+		 << "    Desarrollado por Ricardo Vel\240zquez Contreras - rivel_co" << endl
+		 << endl
+		 << endl
+		 << "    Presiona cualquier tecla para volver...";
+	system("pause>>null");
+	return;
+}
+
 int main(){
-	system("TITLE Activity Test Counter v0.1");
-	Conteo();
+	system("TITLE Activity Test Counter v0.2");
+	bool menu = true;
+	char opc;
+	while(menu){
+		system("cls");
+		cout << "    ----------           Activity Test Counter v0.2           ----------" << endl
+			 << endl
+			 << "                                    Men\243" << endl
+			 << endl
+			 << "    1- Realizar un conteo" << endl
+			 << "    2- Sobre este programa" << endl
+			 << "    3- Salir" << endl
+			 << endl
+			 << "    N\243mero de tu elecci\242n: ";
+		cin >> opc;
+		switch(opc){
+			case '1':
+				Conteo();
+				break;
+			case '2':
+				SobreElPrograma();
+				break;
+			case '3':
+				menu = false;
+				break;
+			default:
+				cout << "    Ingresa una opci\242n v\240lida" << endl;
+				break;
+		}
+	}
 	
 	return 0;
 }

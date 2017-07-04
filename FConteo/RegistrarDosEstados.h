@@ -6,12 +6,11 @@ void RegistrarDosEstados(){
 	// Abrimos nuestro archivo, está listo para escribir en él
 	archivo.open(RegNombre);
 	
-	// Calculamos el porcentaje de actividad	
-	double pcActivo = PorcentajeActividad();
-	// Calculamos el porcentaje de inactividad
-	double pcInactivo = 100 - pcActivo;
-	// Determinamos el tiempo a la primer inmovilidad 
-	int tPrimero = tiempos[1];
+	TiempoTotal = 0;
+	for (int j=0; j < TiemposCont; j++){
+		TiempoTotal += tiempos[j];
+	}
+	TiempoOficial = min(TiempoTotal, TiempoRegis);
 
 	// Mostramos un resumen de los datos
 	archivo << "Animal ID: " << NombreControl << endl
@@ -21,22 +20,40 @@ void RegistrarDosEstados(){
 			<< "Tiempo especificado por el usuario: " << FormatoReloj(TiempoRegis) << endl
 			<< "Tiempo total registrado: " << FormatoReloj(TiempoTotal) << endl << endl
 			
-			<< "Las siguientes estadísticas se evaluaron en base al tiempo " << FormatoReloj(TiempoOficial) << endl
-			<< "dado que es la medida más conveniente a analizar" << endl << endl
-			
+			<< "Las siguientes estadísticas se evaluaron en base al tiempo: " << FormatoReloj(TiempoOficial) << endl << endl;
+
+	double pcActivo = PorcentajeActividad(0, TiempoOficial);
+	double pcInactivo = 100 - pcActivo;
+	archivo	<< "Para todo el intervalo usado:"<< endl
 			<< "Tiempo de actividad: " << FormatoReloj(TiempoActivo) << endl
-			<< "Tiempo de inactividad: " << FormatoReloj(TiempoOficial-TiempoActivo) << endl << endl
-			
+			<< "Tiempo de inactividad: " << FormatoReloj(TiempoOficial-TiempoActivo) << endl
 			<< "Porcentaje de actividad: " << pcActivo << " %" << endl
-			<< "Porcentaje de inactividad: " << pcInactivo << " %" << endl << endl
-			
-			<< "Tiempo a primera inactividad: " << FormatoReloj(tPrimero) << endl << endl
-			
+			<< "Porcentaje de inactividad: " << pcInactivo << " %" << endl
+			<< "Tiempo a primera inactividad: " << FormatoReloj(tPrimero) << endl
 			<< "Mayor periodo de actividad: " << FormatoReloj(MayAct) << endl
-			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl << endl
-			
-			<< "Promedio de tiempo activo: " << FormatoReloj(PromAct) << endl
-			<< "Promedio de tiempo inactivo: " << FormatoReloj(PromInact) << endl << endl;
+			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl << endl;
+	
+	pcActivo = PorcentajeActividad(TiempoOficial/3, 2*TiempoOficial/3);
+	pcInactivo = 100 - pcActivo;
+	archivo << "Para los últimos 2/3 del intervalo usado:" << endl
+			<< "Tiempo de actividad: " << FormatoReloj(TiempoActivo) << endl
+			<< "Tiempo de inactividad: " << FormatoReloj((2*TiempoOficial/3)-TiempoActivo) << endl
+			<< "Porcentaje de actividad: " << pcActivo << " %" << endl
+			<< "Porcentaje de inactividad: " << pcInactivo << " %" << endl
+			<< "Tiempo a primera inactividad: " << FormatoReloj(tPrimero) << endl
+			<< "Mayor periodo de actividad: " << FormatoReloj(MayAct) << endl
+			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl << endl;
+	
+	pcActivo = PorcentajeActividad(TiempoOficial/6, 4*TiempoOficial/6);
+	pcInactivo = 100 - pcActivo;
+	archivo << "Para los 4/6 intermedios del intervalo usado:" << endl
+			<< "Tiempo de actividad: " << FormatoReloj(TiempoActivo) << endl
+			<< "Tiempo de inactividad: " << FormatoReloj((4*TiempoOficial/6)-TiempoActivo) << endl
+			<< "Porcentaje de actividad: " << pcActivo << " %" << endl
+			<< "Porcentaje de inactividad: " << pcInactivo << " %" << endl
+			<< "Tiempo a primera inactividad: " << FormatoReloj(tPrimero) << endl
+			<< "Mayor periodo de actividad: " << FormatoReloj(MayAct) << endl
+			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl << endl;
 
 	// Mostramos los periodos como se registraron por el usuario
 	archivo << "Reporte completo de periodos actividad/inactividad" << endl
@@ -59,9 +76,6 @@ void RegistrarDosEstados(){
 	// Mostramos las entradas de tiempo originales
 	archivo << endl << endl << "Registro completo de deltas de tiempo (ms):" << endl;
 	for (int i=0; i<TiemposCont; i++){
-		if (i == DeltasVal){
-			archivo << "// Fin de tiempo especificado" << endl;
-		}
 		archivo << tiempos[i] << endl;
 	}
 	archivo << endl << endl << "Registro realizado con " << ATCRevision << " - rivel_co" << endl

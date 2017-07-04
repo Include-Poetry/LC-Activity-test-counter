@@ -55,8 +55,6 @@ void SobreElPrograma(){
 		 << "    - Tiempo de latencia (a primera inactividad)" << endl
 		 << "    - Mayor periodo de actividad" << endl
 		 << "    - Mayor periodo de inactividad" << endl
-		 << "    - Promedio de tiempo activo" << endl
-		 << "    - Promedio de tiempo inactivo" << endl
 		 << "    De forma adicional se agrega un reporte completo de:" << endl
 		 << "    - Tiempo de cambio de estado respecto a la duraci\242n total del registro" << endl
 		 << "    - Registro de deltas de tiempo (tiempo transcurrido en ms entre cada" << endl
@@ -69,6 +67,16 @@ void SobreElPrograma(){
 		 << "       Registros/[Nombre de la prueba]/[Fecha del experimento]/" << endl
 		 << "    a partir de la ruta en donde se ejecut\242 en programa y en archivo:" << endl
 		 << "       [Fecha del experimento] [Nombre de la prueba] [ID del animal].txt" << endl
+		 << endl
+		 << endl
+		 << "    Este programa es de c\242digo abierto, si quieres contribuir a mejorar" << endl
+		 << "    esta herramienta agregando nuevas funciones haz fork en:" << endl
+		 << "    -  https://github.com/Include-Poetry/LC-Activity-test-counter" << endl
+		 << "    Si encuentras alg\243n problema en el funcionamiento o quieres hacer" << endl
+		 << "    alguna sugerencia, entra a:" << endl
+		 << "    -  https://github.com/Include-Poetry/LC-Activity-test-counter/issues" << endl
+		 << "    Descarga la \243ltima versi\242n del programa en:" << endl
+		 << "    -  https://github.com/Include-Poetry/LC-Activity-test-counter/releases" << endl
 		 << endl
 		 << endl
 		 << endl

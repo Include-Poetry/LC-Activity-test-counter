@@ -8,11 +8,12 @@ void RegistrarTresEstados(){
 
 	// Obtenemos sumatorias temporales
 	long long int OpenSpace = 0, CloseSpace = 0, CentralSpace = 0;
-	TiempoTotal = 0, TiempoOficial = 0;
+	TiempoTotal = 0;
 
 	long long int valido;
 	int PosActual;
 	int pasa = -1;
+	int OpenIn = 0, CloseIn = 0, CenterIn = 0;
 
 	for (int i=0; i < TiemposCont; i++){
 		PosActual = OrdenEspacios[i];
@@ -25,12 +26,15 @@ void RegistrarTresEstados(){
 		if (pasa == -1){
 			switch(PosActual){
 				case 0:
+					OpenIn++;
 					OpenSpace += valido;
 					break;
 				case 1:
+					CenterIn++;
 					CentralSpace += valido;
 					break;
 				case 2:
+					CloseIn++;
 					CloseSpace += valido;
 					break;
 			}
@@ -52,30 +56,31 @@ void RegistrarTresEstados(){
 	// Mostramos un resumen de los datos
 	archivo << "Animal ID: " << NombreControl << endl
 			<< "Prueba realizada: " << TipoExperimento << " -> " << TExpCompleto << endl
-			<< "Fecha del experimento: " << ExpDia << "-" << ExpMes << "-" << ExpAno << endl 
-			<< endl
+			<< "Fecha del experimento: " << ExpDia << "-" << ExpMes << "-" << ExpAno << endl << endl
+
 			<< "Tiempo especificado por el usuario: " << FormatoReloj(TiempoRegis) << endl
-			<< "Tiempo total registrado: " << FormatoReloj(TiempoTotal) << endl 
-			<< endl
-			<< "Las siguientes estadísticas se evaluaron en base al tiempo " << FormatoReloj(TiempoOficial) << endl
-			<< "dado que es la medida más conveniente a analizar" << endl
-			<< endl
-			<< "Tiempo en espacios abiertos " << FormatoReloj(OpenSpace) << endl
-			<< "Tiempo en el espacio central " << FormatoReloj(CentralSpace) << endl
-			<< "Tiempo en espacios cerrados " << FormatoReloj(CloseSpace) << endl
-			<< endl
+			<< "Tiempo total registrado: " << FormatoReloj(TiempoTotal) << endl << endl
+
+			<< "Las siguientes estadísticas se evaluaron en base al tiempo: " << FormatoReloj(TiempoOficial) << endl<< endl
+
+			<< "Tiempo en espacios abiertos: " << FormatoReloj(OpenSpace) << endl
+			<< "Tiempo en el espacio central: " << FormatoReloj(CentralSpace) << endl
+			<< "Tiempo en espacios cerrados: " << FormatoReloj(CloseSpace) << endl<< endl
+
 			<< "Porcentaje en espacios abiertos: " << pcOpen << " %" << endl
 			<< "Porcentaje en el espacio central: " << pcCentral << " %" << endl
-			<< "Porcentaje en espacios cerrados: " << pcClose << " %" << endl 
-			<< endl;
+			<< "Porcentaje en espacios cerrados: " << pcClose << " %" << endl << endl
+
+			<< "Entradas a espacios abiertos: " << OpenIn-1 << endl
+			<< "Entradas al espacio central: " << CenterIn << endl
+			<< "Entradas a espacios cerrados: " << CloseIn << endl << endl;
 
 	// Mostramos los periodos como se registraron por el usuario
 	archivo << "Reporte completo de periodos en espacio abierto/central/cerrado" << endl
 			<< "respecto al inicio del registro:" << endl;
-	int hora = 0, minuto = 0, segundo = 0, milesima = 0;
 	int actual, PosActualF;
 	long long int acum = 0;
-	int AhoraImp;
+
 	archivo << "----------------------------------" << endl
 			<< "|      Momento     |   Espacio   |" << endl
 			<< "----------------------------------" << endl;
@@ -102,9 +107,6 @@ void RegistrarTresEstados(){
 	// Mostramos las entradas de tiempo originales
 	archivo << endl << endl << "Registro completo de deltas de tiempo (ms):" << endl;
 	for (int i=0; i<TiemposCont; i++){
-		if (i == pasa){
-			archivo << "// Fin de tiempo especificado" << endl;
-		}
 		archivo << OrdenEspacios[i] << " " << TiemposTri[ OrdenEspacios[i] ][i] << endl;
 	}
 	archivo << endl << endl << "Registro realizado con " << ATCRevision << " - rivel_co" << endl

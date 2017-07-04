@@ -21,6 +21,8 @@ long long int TiemposTri[3][100000];
 long long int OrdenEspacios[100000];
 // Promedio de tiempos actividad/inactividad
 long long int PromAct, PromInact;
+// True si se analizan solo deltas
+bool SoloDeltas;
 
 string RegNombre, 		// Nombre del registro actual
 	   RutaRegistro,	// Ruta en donde se guardará el archivo de salida
@@ -47,9 +49,8 @@ char PMOpen,	// Espacios abiertos
 long long int TiempoTotal,
 			  TiempoActivo, // Tiempo de actividad
 			  TiempoOficial;
+long long int tPrimero;
 long long int MayAct, MayInact;
-// Cantidad de deltas válidos
-long long int DeltasVal;
 
 #include "FAux/Formato.h"
 #include "FAux/FormatoReloj.h"
@@ -59,6 +60,7 @@ long long int DeltasVal;
 #include "MMenu/InfoGrlRegistro.h"
 #include "MMenu/SobreElPrograma.h"
 
+#include "FConteo/RegistrarDeltas.h"
 #include "FConteo/RegistrarDosEstados.h"
 #include "FConteo/RegistrarTresEstados.h"
 #include "FConteo/ConteoDosEstados.h"
@@ -70,23 +72,29 @@ int main(){
 	system(pVersion.c_str());
 
 	bool menu = true;
-	char opc;
+	int opc;
 	while(menu){
 		Cabecera("Men\243");
-		cout << "    1- Realizar un conteo" << endl
-			 << "    2- Sobre este programa" << endl
-			 << "    3- Salir" << endl
+		cout << "    1- Realizar un conteo est\240ndar" << endl
+			 << "    2- Realizar un an\240lisis por deltas de tiempo" << endl
+			 << "    3- Sobre este programa" << endl
+			 << "    4- Salir" << endl
 			 << endl
 			 << "    N\243mero de tu elecci\242n: ";
 		cin >> opc;
 		switch(opc){
-			case '1':
+			case 1:
+				SoloDeltas = false;
 				InfoConteo();
 				break;
-			case '2':
+			case 2:
+				SoloDeltas = true;
+				InfoConteo();
+				break;
+			case 3:
 				SobreElPrograma();
 				break;
-			case '3':
+			case 4:
 				menu = false;
 				break;
 			default:

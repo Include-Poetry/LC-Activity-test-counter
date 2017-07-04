@@ -10,9 +10,10 @@ void InfoConteo(){
 			cout << "    Acabas de usar los siguientes datos generales:" << endl
 				 << "    Fecha " << ExpDia << '-' << ExpMes << '-' << ExpAno << endl
 				 << "    Experimento " << TipoExperimento << endl
-				 << "    Tiempo " << FormatoReloj(TiempoRegis) << endl
-				 << "    Caracter de salida " << CharSalida << endl;
-			if (TipoExperimento == "PM"){
+				 << "    Tiempo " << FormatoReloj(TiempoRegis) << endl;
+
+			if (!SoloDeltas) cout << "    Caracter de salida " << CharSalida << endl;
+			if (TipoExperimento == "PM" && !SoloDeltas){
 				cout << endl
 					 << "    Y como indicadores de ubicaci\242n: " << endl
 					 << "       " << PMOpen << " -> Para espacios abiertos" << endl
@@ -53,15 +54,17 @@ void InfoConteo(){
 				}
 				cout << endl;
 				
-				cout << "    \250Quieres volver a usar el caracter " << CharSalida << " para terminar? (S/N): ";
-				cin >> opc;
-				if (opc == 'n' || opc == 'N'){
-					cout << "    Ingresa el caracter con el que marcar\240s el fin del registro: ";
-					cin >> CharSalida;
+				if (!SoloDeltas){
+					cout << "    \250Quieres volver a usar el caracter " << CharSalida << " para terminar? (S/N): ";
+					cin >> opc;
+					if (opc == 'n' || opc == 'N'){
+						cout << "    Ingresa el caracter con el que marcar\240s el fin del registro: ";
+						cin >> CharSalida;
+					}
+					cout << endl;
 				}
-				cout << endl;
 
-				if (viejoTipo == "PM" && TipoExperimento == "PM"){
+				if (viejoTipo == "PM" && TipoExperimento == "PM" && !SoloDeltas){
 					cout << "    \250Quieres volver a usar los caracteres: " << endl
 						 << "       " << PMOpen << " -> Para espacios abiertos" << endl
 						 << "       " << PMCenter << " -> Para el espacio central" << endl
@@ -76,7 +79,7 @@ void InfoConteo(){
 						cout << "    Ingresa el caracter para espacios cerrados: ";
 						cin >> PMClose;
 					}
-				} else if (viejoTipo != "PM" && TipoExperimento == "PM") {
+				} else if (viejoTipo != "PM" && TipoExperimento == "PM" && !SoloDeltas) {
 					cout << "    Se ha identificado la prueba: Plus Maze" << endl
 						 << "    Ingresa el caracter para espacios abiertos: ";
 					cin >> PMOpen;
@@ -104,19 +107,21 @@ void InfoConteo(){
 			TiempoRegis = (TrHoras*3600000) + (TrMins*60000) + (TrSegs*1000);
 			cout << endl;
 			
-			cout << "    Ingresa el caracter con el que marcar\240s el fin del registro: ";
-			cin >> CharSalida;
-			cout << endl;
-
-			if (TipoExperimento == "PM"){
-				cout << "    Se ha identificado la prueba: Plus Maze" << endl
-					 << "    Ingresa el caracter para espacios abiertos: ";
-				cin >> PMOpen;
-				cout << "    Ingresa el caracter para el espacio central: ";
-				cin >> PMCenter;
-				cout << "    Ingresa el caracter para espacios cerrados: ";
-				cin >> PMClose;
+			if (!SoloDeltas){
+				cout << "    Ingresa el caracter con el que marcar\240s el fin del registro: ";
+				cin >> CharSalida;
 				cout << endl;
+
+				if (TipoExperimento == "PM"){
+					cout << "    Se ha identificado la prueba: Plus Maze" << endl
+						 << "    Ingresa el caracter para espacios abiertos: ";
+					cin >> PMOpen;
+					cout << "    Ingresa el caracter para el espacio central: ";
+					cin >> PMCenter;
+					cout << "    Ingresa el caracter para espacios cerrados: ";
+					cin >> PMClose;
+					cout << endl;
+				}
 			}
 		}
 		
@@ -140,35 +145,40 @@ void InfoConteo(){
 		if (TipoExperimento == "PM"){
 			TExpCompleto = "Plus Maze";
 			ExpIdentif = true;
-			ConteoTresEstados();
+			if (!SoloDeltas) ConteoTresEstados();
+			else RegistrarDeltas(3);
 			cout << "    Guardando..." << endl;
 			RegistrarTresEstados();	// Guardamos
 			cout << "    Guardado finalizado" << endl << endl;
 		} else if (TipoExperimento == "TST"){
 			TExpCompleto = "Tail Suspension Test";
 			ExpIdentif = true;
-			ConteoDosEstados();
+			if (!SoloDeltas) ConteoDosEstados();
+			else RegistrarDeltas(2);
 			cout << "    Guardando..." << endl;
 			RegistrarDosEstados();	// Guardamos
 			cout << "    Guardado finalizado" << endl << endl;
 		} else if (TipoExperimento == "FST"){
 			TExpCompleto = "Forced Swim Test";
 			ExpIdentif = true;
-			ConteoDosEstados();
+			if (!SoloDeltas) ConteoDosEstados();
+			else RegistrarDeltas(2);
 			cout << "    Guardando..." << endl;
 			RegistrarDosEstados();	// Guardamos
 			cout << "    Guardado finalizado" << endl << endl;
 		} else {
 			TExpCompleto = "No identificado :c";
 			ExpIdentif = false;
-			ConteoDosEstados();
+			if (!SoloDeltas) ConteoDosEstados();
+			else RegistrarDeltas(2);
 			cout << "    Guardando..." << endl;
 			RegistrarDosEstados();	// Guardamos
 			cout << "    Guardado finalizado" << endl << endl;
 		}
 
 		char otro;
-		cout << "    \250Realizar otro registro? (S/N): ";
+		if (!SoloDeltas) cout << "    \250Realizar otro registro? (S/N): ";
+		else cout << "    \250Realizar otro an\240lisis por deltas? (S/N): ";
 		cin >> otro;
 		sigue = otro == 's' || otro == 'S';
 	}

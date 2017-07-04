@@ -4,7 +4,7 @@ void ConteoTresEstados(){
 	Cabecera("Conteo");
 
 	// Variables para medir el tiempo
-	li freq, t1, t2, t3;
+	li freq, t1, t2;
 	int i; // Para el ciclo
 	
 	// Caracter de apoyo, será las entradas del usuario
@@ -31,9 +31,6 @@ void ConteoTresEstados(){
 		 << endl
 		 << "    Esperando el comienzo de conteo ...";
 	RegNombre.insert(0, RutaRegistro);
-	// Se indica el tiempo 0
-	tiempos[0] = 0;
-	int pos;
 
 	// Obtenemos la frecuencia
 	QueryPerformanceFrequency(&freq);

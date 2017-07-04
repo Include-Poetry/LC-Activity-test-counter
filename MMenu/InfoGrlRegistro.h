@@ -5,7 +5,7 @@ void InfoGrlRegistro(){
 		 << "       " << RutaRegistro << RegNombre << endl
 		 << endl 
 		 << "    La prueba a registrar es: " << TipoExperimento << endl
-		 << "    identificado como: " << TExpCompleto << endl
+		 << "    identificada como: " << TExpCompleto << endl
 		 << endl
 		 << "    La prueba se ajustar\240 a: " << FormatoReloj(TiempoRegis) << endl
 		 << endl;

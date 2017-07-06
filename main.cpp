@@ -13,7 +13,7 @@ using namespace std;
 #define li LARGE_INTEGER
 
 // Versión actual
-string ATCRevision = "Activity Test Counter v0.3";
+string ATCRevision = "Activity Test Counter v0.3.1";
 // Almacenamiento de tiempos en milisegundos
 long long int tiempos[100000];
 // Almacenamiento de tiempo para triple estado

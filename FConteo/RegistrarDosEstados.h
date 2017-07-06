@@ -12,6 +12,12 @@ void RegistrarDosEstados(){
 	}
 	TiempoOficial = min(TiempoTotal, TiempoRegis);
 
+	double dTiempoActivo = TiempoActivo,
+		   dTiempoOficial = TiempoOficial,
+		   dtPrimero = tPrimero,
+		   dMayAct = MayAct,
+		   dMayInact = MayInact;
+
 	// Mostramos un resumen de los datos
 	archivo << "Animal ID: " << NombreControl << endl
 			<< "Prueba realizada: " << TipoExperimento << " -> " << TExpCompleto << endl
@@ -24,36 +30,75 @@ void RegistrarDosEstados(){
 
 	double pcActivo = PorcentajeActividad(0, TiempoOficial);
 	double pcInactivo = 100 - pcActivo;
-	archivo	<< "Para todo el intervalo usado:"<< endl
-			<< "Tiempo de actividad: " << FormatoReloj(TiempoActivo) << endl
-			<< "Tiempo de inactividad: " << FormatoReloj(TiempoOficial-TiempoActivo) << endl
-			<< "Porcentaje de actividad: " << pcActivo << " %" << endl
-			<< "Porcentaje de inactividad: " << pcInactivo << " %" << endl
+	dTiempoActivo = TiempoActivo, dTiempoOficial = TiempoOficial, dtPrimero = tPrimero, 
+	dMayAct = MayAct, dMayInact = MayInact;
+	archivo	<< "Para todo el intervalo usado"<< endl
+			<< endl
+			<< "- Datos para humanos" << endl
+			<< "Tiempo de actividad:          " << FormatoReloj(TiempoActivo) << endl
+			<< "Tiempo de inactividad:        " << FormatoReloj(TiempoOficial-TiempoActivo) << endl
+			<< "Porcentaje de actividad:      " << pcActivo << " %" << endl
+			<< "Porcentaje de inactividad:    " << pcInactivo << " %" << endl
 			<< "Tiempo a primera inactividad: " << FormatoReloj(tPrimero) << endl
-			<< "Mayor periodo de actividad: " << FormatoReloj(MayAct) << endl
-			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl << endl;
+			<< "Mayor periodo de actividad:   " << FormatoReloj(MayAct) << endl
+			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl
+			<< endl
+			<< "+ Datos para computadoras (en segundos):" << endl
+			<< dTiempoActivo/1000 << endl
+			<< (dTiempoOficial-dTiempoActivo)/1000 << endl
+			<< pcActivo << endl
+			<< pcInactivo << endl
+			<< dtPrimero/1000 << endl
+			<< dMayAct/1000 << endl
+			<< dMayInact/1000 << endl << endl;
 	
 	pcActivo = PorcentajeActividad(TiempoOficial/3, 2*TiempoOficial/3);
 	pcInactivo = 100 - pcActivo;
+	dTiempoActivo = TiempoActivo, dTiempoOficial = TiempoOficial, dtPrimero = tPrimero,
+	dMayAct = MayAct, dMayInact = MayInact;
 	archivo << "Para los últimos 2/3 del intervalo usado:" << endl
-			<< "Tiempo de actividad: " << FormatoReloj(TiempoActivo) << endl
-			<< "Tiempo de inactividad: " << FormatoReloj((2*TiempoOficial/3)-TiempoActivo) << endl
-			<< "Porcentaje de actividad: " << pcActivo << " %" << endl
-			<< "Porcentaje de inactividad: " << pcInactivo << " %" << endl
+			<< endl
+			<< "- Datos para humanos" << endl
+			<< "Tiempo de actividad:          " << FormatoReloj(TiempoActivo) << endl
+			<< "Tiempo de inactividad:        " << FormatoReloj((2*TiempoOficial/3)-TiempoActivo) << endl
+			<< "Porcentaje de actividad:      " << pcActivo << " %" << endl
+			<< "Porcentaje de inactividad:    " << pcInactivo << " %" << endl
 			<< "Tiempo a primera inactividad: " << FormatoReloj(tPrimero) << endl
-			<< "Mayor periodo de actividad: " << FormatoReloj(MayAct) << endl
-			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl << endl;
+			<< "Mayor periodo de actividad:   " << FormatoReloj(MayAct) << endl
+			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl
+			<< endl
+			<< "+ Datos para computadoras (en segundos):" << endl
+			<< dTiempoActivo/1000 << endl
+			<< ((2*dTiempoOficial/3)-dTiempoActivo)/1000 << endl
+			<< pcActivo << endl
+			<< pcInactivo << endl
+			<< dtPrimero/1000 << endl
+			<< dMayAct/1000 << endl
+			<< dMayInact/1000 << endl << endl;
 	
 	pcActivo = PorcentajeActividad(TiempoOficial/6, 4*TiempoOficial/6);
 	pcInactivo = 100 - pcActivo;
+	dTiempoActivo = TiempoActivo, dTiempoOficial = TiempoOficial, dtPrimero = tPrimero, 
+	dMayAct = MayAct, dMayInact = MayInact;
 	archivo << "Para los 4/6 intermedios del intervalo usado:" << endl
-			<< "Tiempo de actividad: " << FormatoReloj(TiempoActivo) << endl
-			<< "Tiempo de inactividad: " << FormatoReloj((4*TiempoOficial/6)-TiempoActivo) << endl
-			<< "Porcentaje de actividad: " << pcActivo << " %" << endl
-			<< "Porcentaje de inactividad: " << pcInactivo << " %" << endl
+			<< endl
+			<< "- Datos para humanos" << endl
+			<< "Tiempo de actividad:          " << FormatoReloj(TiempoActivo) << endl
+			<< "Tiempo de inactividad:        " << FormatoReloj((4*TiempoOficial/6)-TiempoActivo) << endl
+			<< "Porcentaje de actividad:      " << pcActivo << " %" << endl
+			<< "Porcentaje de inactividad:    " << pcInactivo << " %" << endl
 			<< "Tiempo a primera inactividad: " << FormatoReloj(tPrimero) << endl
-			<< "Mayor periodo de actividad: " << FormatoReloj(MayAct) << endl
-			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl << endl;
+			<< "Mayor periodo de actividad:   " << FormatoReloj(MayAct) << endl
+			<< "Mayor periodo de inactividad: " << FormatoReloj(MayInact) << endl
+			<< endl
+			<< "+ Datos para computadoras (en segundos):" << endl
+			<< dTiempoActivo/1000 << endl
+			<< ((4*dTiempoOficial/6)-dTiempoActivo)/1000 << endl
+			<< pcActivo << endl
+			<< pcInactivo << endl
+			<< dtPrimero/1000 << endl
+			<< dMayAct/1000 << endl
+			<< dMayInact/1000 << endl << endl;
 
 	// Mostramos los periodos como se registraron por el usuario
 	archivo << "Reporte completo de periodos actividad/inactividad" << endl
@@ -78,6 +123,8 @@ void RegistrarDosEstados(){
 	for (int i=0; i<TiemposCont; i++){
 		archivo << tiempos[i] << endl;
 	}
+	archivo << "-1" << endl;
+
 	archivo << endl << endl << "Registro realizado con " << ATCRevision << " - rivel_co" << endl
 			<< "Fin del reporte" << endl;
 	// Terminamos de escribir y cerramos nuestro archivo

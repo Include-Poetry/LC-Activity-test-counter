@@ -13,24 +13,32 @@ double PorcentajeActividad(long long int c, long long int f){
 
 	long long int acum = 0;
 	long long int resto, extra;
-
+	// Contamos hasta alcanzar el punto de inicio
 	while (acum < inicio){
 		acum += tiempos[i++];
 	}
+	// 10
+	// 0 2 3 4 1
+	// Corregimos el tiempo eliminando lo que no entra en el inicio
 	resto = acum - inicio;
-	if ((i-1)%2){
+
+	if ((i-1)%2){	// Si el último en sumar fue par
+		if (resto){
+			cont++;
+		}
 		TiempoActivo += resto;
 		if (tiempos[i] == 0) tPrimero = tiempos[i+1];
 		else tPrimero = resto;
 		if (resto > f){
 			MayAct = f;
 		} else MayAct = resto;
-		cont++;
 	} else {
+		if (resto){
+			cont2++;
+		}
 		if (resto > f){
 			MayInact = f;
 		} else MayInact = resto;
-		cont2++;
 	}
 	inicio = i;
 
@@ -57,19 +65,25 @@ double PorcentajeActividad(long long int c, long long int f){
 			if (actual > MayInact) MayInact = actual;
 		}
 	}
-	//if (MayAct > f) MayAct -= resto;
-
 	if (tPrimero > f) tPrimero = f;
 
 	double arriba = TiempoActivo, abajo = f;
 	double final = (arriba/abajo)*100;
 	
-	PromAct = TiempoActivo/cont;
-	if (cont2 == 0){
+	EpisodiosAct = cont;
+	EpisodiosInact = cont2-1;
+
+	if (EpisodiosAct == 0){
+		PromAct = 0;
+	} else {
+		PromAct = TiempoActivo/EpisodiosAct;
+	}
+	if (EpisodiosInact == 0){
 		PromInact = 0;
 	} else {
-		PromInact = (f-TiempoActivo)/(cont2);
+		PromInact = (f-TiempoActivo)/(EpisodiosInact);
 	}
+	
 	
 	return final;
 }

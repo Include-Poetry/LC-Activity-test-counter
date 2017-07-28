@@ -3,17 +3,22 @@
 void SobreElPrograma(){
 	Cabecera("Sobre la funci\242n del programa");
 
-	cout << "    El programa eval\243a distintas estad\241sticas sobre el tiempo de" << endl
+	cout << "    Este es un sumario de las caracter\241sticas del programa." << endl
+		 << "    Una descripci\242n completa se puede encontrar en:" << endl
+		 << "    -  https://github.com/Include-Poetry/LC-Activity-test-counter" << endl
+		 << endl
+		 << endl
+		 << "    El programa eval\243a distintas estad\241sticas sobre el tiempo de" << endl
 		 << "    actividad e inactividad de un animal experimental en distintas pruebas" << endl
 		 << "    de conducta. La versi\242n actual est\240 especialmente enfocada para" << endl
 		 << "        TST - Tail Suspension Test" << endl
 		 << "        FST - Forced Swim Test" << endl
 		 << "        PM  - Plus Maze" << endl
 		 << "    aunque el m\202todo de funcionamiento puede aplicarse tambi\202n a" << endl
-		 << "    otras pruebas que evaluen dos o tres estados distintos."
+		 << "    otras pruebas que eval\243en dos o tres estados distintos."
 		 << endl
 		 << endl
-		 << "                      Sobre el m\202todo de funcionamiento" << endl
+		 << "            Sobre el m\202todo de funcionamiento en conteo est\240ndar" << endl
 		 << endl
 		 << "    Para la utilizaci\242n del programa se debe estar observando la prueba" << endl
 		 << "    al mismo momento en que se ejecuta el conteo." << endl
@@ -28,7 +33,7 @@ void SobreElPrograma(){
 		 << "    El programa identifica y se optimiza para tres distintas pruebas:" << endl
 		 << "    - TST -> Tail suspension test" << endl
 		 << "    - FST -> Forced swim test" << endl
-		 << "    - PM -> Plus maze" << endl
+		 << "    - PM  -> Plus maze" << endl
 		 << "    En las primeras dos pruebas se eval\243an dos posibles estados, que son:" << endl
 		 << "    - Actividad / Inactividad" << endl
 		 << "    Adem\240s se da por hecho que el sujeto de prueba comienza con un estado" << endl
@@ -55,7 +60,14 @@ void SobreElPrograma(){
 		 << "    - Tiempo de latencia (a primera inactividad)" << endl
 		 << "    - Mayor periodo de actividad" << endl
 		 << "    - Mayor periodo de inactividad" << endl
+		 << "    - Promedio de fase de actividad" << endl
+		 << "    - Promedio de fase de inactividad" << endl
+		 << "    - Cantidad de episodios de actividad" << endl
+		 << "    - Cantidad de episodios de inactividad" << endl
+		 << "    - Cantidad de entradas en cada espacio" << endl
 		 << "    De forma adicional se agrega un reporte completo de:" << endl
+		 << "    - Registro minuto a minuto de porcentaje de actividad" << endl
+		 << "    - Registro minuto a minuto de tiempo de actividad" << endl
 		 << "    - Tiempo de cambio de estado respecto a la duraci\242n total del registro" << endl
 		 << "    - Registro de deltas de tiempo (tiempo transcurrido en ms entre cada" << endl
 		 << "      cambio de estado)." << endl

@@ -14,7 +14,7 @@ Para poder registrar y analizar una prueba, se debe ver al mismo tiempo el exper
 
 **Pruebas de dos estados:** Aquí entran las pruebas en las que el animal sujeto de estudio adopta uno de dos estados, un estado de *actividad* o uno de *inactividad*. Las pruebas ideales de esta categoría son *Tail suspension test* y *Forced swim test*.
 
-**Pruebas de tres estados:** Cubre las pruebas en las que el animal opta por tres estados distintos. La prueba ideal de esta categoría es *Plus maze*, en donde se evalúan tres posibles ubicaciones dentro del laberinto.
+**Pruebas de tres estados:** Cubre las pruebas en las que el animal opta por tres estados o posiciones distintas. La prueba ideal de esta categoría es *Plus maze*, en donde se evalúan tres posibles ubicaciones dentro del laberinto.
 
 ## Uso del conteo estándar
 
@@ -53,13 +53,59 @@ Para este registro se espera que todas las entradas sean numéricas. Para decir 
 
 Este tipo de registro resulta especialmente útil para volver a realizar la estadística en versiones más recientes del programa. El programa en cada reporte generará un registro como el descrito para la entrada de este conteo.
 
+## Uso de las búsquedas
+
+El programa permite realizar dos tipos de búsquedas para pruebas de dos estados, una búsqueda de ***bloque óptimo*** y otra de ***diferencias óptimas***. El objetivo de estas búsquedas es conocer mejor el *comportamiento* de los datos que genera el experimento realizado.
+
+### Búsqueda de bloque óptimo
+
+Esta búsqueda permite encontrar en nuestro registro un segmento de longitud dada en donde se encuentra la mayor parte de la actividad en uno o más registros. Para lograr este análisis es necesario tener un reporte del porcentaje o del tiempo de actividad de un determinado experimento (como los que genera este programa). Cada reporte indica en la primer línea la cantidad de minutos que se registraron, en una cantidad fraccionada de minutos, se *cierra* al número entero siguiente. A continuación se indica en cada línea el porcentaje del tiempo o el tiempo en sí que el animal estuvo en actividad. Un ejemplo es el siguiente
+
+    6      // Se registraron 6 minutos
+    35     // 35% de actividad del minuto 0 al 1
+    19     // 19% de actividad del minuto 1 al 2
+    28     // Del minuto 2 al 3
+    27     // Del minuto 3 al 4
+    10     // Del minuto 4 al 5
+    13     // Del minuto 5 al 6
+
+En caso de registrar por segundos de actividad es el mismo principio.
+
+Si ingresamos el registro anterior a la búsqueda (*sólo los números, claro*) y buscamos el intervalo de **2 minutos** en el que hay más actividad, el programa indicará el espacio temporal del minuto **00:02:00:000 al 00:04:00:000**, abarcando los valores `27` y `28`, si buscamos por el intervalo de 2 minutos en el que hay más inactividad, el programa indicará del minuto 00:04:00:000 al 00:06:00:000, abarcando los valores `10` y `13`. **Es importante considerar que sólo se buscará en minutos contiguos**.
+
+Esta función cobra mayor utilidad cuando realizamos la búsqueda en varios registros distintos entre sí. El programa verá en qué intervalo de longitud dada es en donde se encuentra el mayor porcentaje o tiempo de actividad o inactividad en todos los registros indicados, por lo tanto, la salida dirá el segmento en el que todos los registros en conjunto promedian la mayor cantidad de actividad o inactividad.
+
+Para realizar esta búsqueda, desde el menú principal hay que ingresar a la opción `3`, de ahí a la `1`. A continuación el programa pedirá la cantidad de registros que vamos a evaluar en conjunto, pueden se hasta **100** registros diferentes. Una vez indicada la cantidad de registros, habrá que ingresar el registro temporal por minuto de cada uno. Como ya se mencionaba, se pueden utilizar los porcentajes o los tiempos, pero se deberá ser consistente con todos los registros. Ya que hemos ingresados todos los registros, se preguntará si se quiere optimizar la actividad o la actividad, en caso de escoger actividad, se deberá ingresar `S` o `s`, en caso de escoger inactividad se deberá ingresar `N` o `n`. A continuación se deberá indicar la longitud del bloque que se busca, esto se indica con un número entero que expresa la duración en minutos de dicho bloque. Si se encuentran varios bloques óptimos se mencionarán todos ellos.
+
+### Búsqueda de diferencias óptimas
+
+Esta búsqueda permite encontrar el bloque temporal de longitud dada, en el que existe mayor diferencia en tiempo o porcentaje de actividad entre dos o más registros. El programa solicitará los registros de los que se considerará la actividad y después los registros de los que se considerará la inactividad. Cada registro deberá ser registrado con el formato que se indicó en el apartado anterior sobre el *bloque óptimo*. Si por ejemplo buscamos el segmento temporal de duración de **2 minutos** considerando el siguiente registro como actividad:
+
+    4
+    10
+    12
+    3
+    13
+
+Y el siguiente como inactividad:
+
+    4
+    2
+    10
+    34
+    12
+
+El programa indicará que el bloque en donde existe una mayor diferencia de actividad es del minuto **00:00:00:000 al 00:02:00:000**. Es importante recordar que en ambos registros indicamos el porcentaje o tiempo de actividad, el programa hará las conversiones necesarias para tomar la inactividad y posteriormente realizar la búsqueda.
+
+Para realizar esta búsqueda desde el menú principal, es necesario ingresar a la opción `3` y a continuación la `2`. De ahí se solicitará la cantidad de registros a tomar como activos y la cantidad a tomar como inactivos. Estos valores no necesariamente tienen que ser iguales, pues ambos son normalizados antes de realizar la búsqueda. Después de ingresar todos los registros, habrá que indicar la duración en minutos del bloque que estamos buscando. Si se encuentran varios bloques óptimos se mostrarán todos ellos.
+
 ## Estadísticas realizadas
 
 El programa realiza estadísticas especialmente diseñadas para cada tipo de prueba y con precisión de milésimas de segundo:
 
 ### Pruebas de dos estados
 
-Las estadísticas se realizan en todo el intervalo especificado, para los últimos 2/3 del intervalo usado y para los 4/6 intermedios del intervalo usado. Por ejemplo, si se ha realizado un registro de 6 minutos, se realizará la estadística de esos seis minutos de registro, de los últimos cuatro minutos y de los cuatro minutos intermedios de la prueba. La estadística realizada es:
+Las estadísticas se realizan en todo el intervalo especificado. La estadística realizada es:
 
 - Tiempo de actividad
 - Tiempo de inactividad
@@ -68,18 +114,65 @@ Las estadísticas se realizan en todo el intervalo especificado, para los últim
 - Tiempo a primera inactividad
 - Mayor periodo de actividad
 - Mayor periodo de inactividad
+- Promedio de fase de actividad
+- Promedio de fase de inactividad
+- Cantidad de episodios de actividad
+- Cantidad de episodios de inactividad
+- Porcentaje de actividad por cada minuto
+- Tiempo de actividad por cada minuto
 
 ### Pruebas de tres estados
 
 - Tiempo en espacios abiertos
 - Tiempo en el espacio central
 - Tiempo en espacios cerrados
-- Porcentaje en espacios abiertos
-- Porcentaje en el espacio central
-- Porcentaje en espacios cerrados
+- Porcentaje de tiempo en espacios abiertos
+- Porcentaje de tiempo en el espacio central
+- Porcentaje de tiempo en espacios cerrados
 - Número de entradas a espacios abiertos
 - Número de entradas al espacio central
 - Número de entradas a espacios cerrados
+- Porcentaje de entradas a espacios abiertos
+- Porcentaje de entradas al espacio central
+- Porcentaje de entradas a espacios cerrados
+
+### Formato de las estadísticas
+
+Cada una de las estadísticas mencionadas se guardan con dos formatos en el mismo archivo, una versión *para humanos* y otra versión *para computadoras*.
+
+#### Versión para humanos
+
+Esta versión de la estadística tiene como objetivo ser leída fácilmente por el usuario, incluye el texto que indica el nombre de cada parámetro medido y un formato adecuado para las medidas temporales. En el caso de un registro de dos estados se generá una salida como la siguiente:
+
+    - Datos para humanos
+    Tiempo de actividad:             00:02:47:687
+    Tiempo de inactividad:           00:03:12:313
+    Porcentaje de actividad:         46.5797 %
+    Porcentaje de inactividad:       53.4203 %
+    Tiempo a primera inactividad:    00:00:03:316
+    Mayor periodo de actividad:      00:00:14:289
+    Mayor periodo de inactividad:    00:00:37:522
+    Promedio de fase de actividad:   00:00:03:422
+    Promedio de fase de inactividad: 00:00:04:006
+    Episodios de actividad:          49
+    Episodios de inactividad:        48
+
+#### Versión para computadoras
+
+Aquí los datos se *imprimen* omitiendo el nombre del parámetro medido y los tiempos son indicados en segundos. Es importante considerar que en este formato se guardan los mismos datos que en el *formato para humanos*, pero el formato facilita el *copiar y pegar* la información y ser reutilizada en hojas de cálculo, por ejemplo. La misma información anteriormente mencionada se guardaría como sigue:
+
+    + Datos para computadoras (en segundos):
+    167.687
+    192.313
+    46.5797
+    53.4203
+    3.316
+    14.289
+    37.522
+    3.422
+    4.006
+    49
+    48
 
 ## Archivos de reporte
 
@@ -103,7 +196,7 @@ Dentro del archivo se almacena:
 - Tiempo especificado por el usuario
 - Tiempo total registrado
 - Tiempo usado de base para las estadísticas
-- Estadísticas según el tipo de prueba
+- Estadísticas según el tipo de prueba en ambos formatos
 - Reporte del registro indicando el estado/posición del animal en el tiempo en que ocurrió
 - Reporte completo de deltas de tiempo
 - Versión del programa con la que se realizó el reporte

@@ -1,12 +1,12 @@
 // Muestra la información general del registro actual
 
 void InfoGrlRegistro(){
-	cout << "    El archivo se guardar\240 en la ubicaci\242n: " << endl
+	cout << "    The file will be saved in the following location: " << endl
 		 << "       " << RutaRegistro << RegNombre << endl
 		 << endl 
-		 << "    La prueba a registrar es: " << TipoExperimento << endl
-		 << "    identificada como: " << TExpCompleto << endl
+		 << "    The test that will be registered is: " << TipoExperimento << endl
+		 << "    identified as: " << TExpCompleto << endl
 		 << endl
-		 << "    La prueba se ajustar\240 a: " << FormatoReloj(TiempoRegis) << endl
+		 << "    The duration of the test is: " << FormatoReloj(TiempoRegis) << endl
 		 << endl;
 }

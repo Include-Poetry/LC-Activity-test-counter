@@ -1,146 +1,230 @@
 // Función que guarda en un archivo los datos obtenidos del conteo
 
 void RegistrarTresEstados(){
+	AgregarComentario();
+	AjustarVelocidad();
 	// Creamos la variable que será nuestro archivo
 	ofstream archivo;
 	// Abrimos nuestro archivo, está listo para escribir en él
-	archivo.open(RegNombre);
+	archivo.open(RegNombre.c_str());
 
-	// Obtenemos sumatorias temporales
-	long long int OpenSpace = 0, CloseSpace = 0, CentralSpace = 0;
-	TiempoTotal = 0;
-
-	long long int valido;
-	int PosActual;
-	int pasa = -1;
-	int OpenIn = 0, CloseIn = 0, CenterIn = 0;
-
-	for (int i=0; i < TiemposCont; i++){
-		PosActual = OrdenEspacios[i];
-
-		valido = TiemposTri[PosActual][i];
-		TiempoTotal += valido;
-
-		valido = TiempoTotal >= TiempoRegis ? TiempoRegis - (TiempoTotal - valido) : TiemposTri[PosActual][i];
-
-		if (pasa == -1){
-			switch(PosActual){
-				case 0:
-					OpenIn++;
-					OpenSpace += valido;
-					break;
-				case 1:
-					CenterIn++;
-					CentralSpace += valido;
-					break;
-				case 2:
-					CloseIn++;
-					CloseSpace += valido;
-					break;
-			}
-		}
-		if (pasa == -1 && valido != TiemposTri[PosActual][i]){
-			pasa = i;
-		}
-	}
-
+	// Calculamos el tiempo real de registro y se selecciona el oficial
+	TiempoTotal = TiempoRealT1();
 	TiempoOficial = min(TiempoTotal, TiempoRegis);
-	double arriba, abajo = TiempoOficial;
-	arriba = OpenSpace;
-	double pcOpen = (arriba/abajo)*100;
-	arriba = CentralSpace;
-	double pcCentral = (arriba/abajo)*100;
-	arriba = CloseSpace;
-	double pcClose = (arriba/abajo)*100;
 
-	abajo = (OpenIn-1) + CenterIn + CloseIn;
-	arriba = OpenIn-1;
-	double pcOpenIn = (arriba/abajo)*100;
-	arriba = CenterIn;
-	double pcCenterIn = (arriba/abajo)*100;
-	arriba = CloseIn;
-	double pcCloseIn = (arriba/abajo)*100;
+	// Mostramos un resumen de los datos
+	archivo << "Animal ID: " << NombreControl << endl
+			<< "Test performed: " << TipoExperimento << " -> " << TExpCompleto << endl
+			<< "Test date: " << ExpDia << "-" << ExpMes << "-" << ExpAno << endl
+			<< "Aditional comments: " << Comentario << endl
+			<< endl
+			<< "Test duration specified by user: " << FormatoReloj(TiempoRegis) << endl
+			<< "Total time registered: " << FormatoReloj(TiempoTotal) << endl
+			<< "The delta times generated in the register were multplied by a factor of: " << SpeedFactor << endl
+			<< endl
+			<< "The following statistics has been made using the duration: " << FormatoReloj(TiempoOficial) << endl
+			<< endl;
+
+	// Calculamos los tiempos por espacio
+	OpenSpace = ActividadDetalle(0, 0, TiempoOficial, registro, TiemposCont);
+	CentralSpace = ActividadDetalle(1, 0, TiempoOficial, registro, TiemposCont);
+	CloseSpace = ActividadDetalle(2, 0, TiempoOficial, registro, TiemposCont);
+	// Calculamos las frecuencias
+	OpenIn = FrecuenciaActividad(0, 0, TiempoOficial, registro, TiemposCont);
+	CenterIn = FrecuenciaActividad(1, 0, TiempoOficial, registro, TiemposCont);
+	CloseIn = FrecuenciaActividad(2, 0, TiempoOficial, registro, TiemposCont);
 
 	double dOpenSpace = OpenSpace,
 		   dCentralSpace = CentralSpace,
 		   dCloseSpace = CloseSpace;
 
-	// Mostramos un resumen de los datos
-	archivo << "Animal ID: " << NombreControl << endl
-			<< "Prueba realizada: " << TipoExperimento << " -> " << TExpCompleto << endl
-			<< "Fecha del experimento: " << ExpDia << "-" << ExpMes << "-" << ExpAno << endl 
+	archivo << "## Data for humans" << endl
 			<< endl
-			<< "Tiempo especificado por el usuario: " << FormatoReloj(TiempoRegis) << endl
-			<< "Tiempo total registrado: " << FormatoReloj(TiempoTotal) << endl 
+			<< "Time spent on open spaces:   " << FormatoReloj(OpenSpace) << endl
+			<< "Time spent on central space: " << FormatoReloj(CentralSpace) << endl
+			<< "Time spent on closed spaces   " << FormatoReloj(CloseSpace) << endl
+			<< "Entries to open spaces:      " << OpenIn << endl
+			<< "Entries to central space:    " << CenterIn << endl
+			<< "Entries to closed spaces:     " << CloseIn << endl
 			<< endl
-			<< "Las siguientes estadísticas se evaluaron en base al tiempo: " << FormatoReloj(TiempoOficial) << endl
+			<< "## Data for computers (seconds)" << endl
 			<< endl
-			<< "- Datos para humanos" << endl
-			<< "Tiempo en espacios abiertos:      " << FormatoReloj(OpenSpace) << endl
-			<< "Tiempo en el espacio central:     " << FormatoReloj(CentralSpace) << endl
-			<< "Tiempo en espacios cerrados:      " << FormatoReloj(CloseSpace) << endl
-			<< "Porcentaje en espacios abiertos:  " << pcOpen << " %" << endl
-			<< "Porcentaje en el espacio central: " << pcCentral << " %" << endl
-			<< "Porcentaje en espacios cerrados:  " << pcClose << " %" << endl
-			<< "Entradas a espacios abiertos:     " << OpenIn-1 << endl
-			<< "Entradas al espacio central:      " << CenterIn << endl
-			<< "Entradas a espacios cerrados:     " << CloseIn << endl
-			<< "Porcentaje de entradas en espacios abiertos:  " << pcOpenIn << " %" << endl
-			<< "Porcentaje de entradas en el espacio central: " << pcCenterIn << " %" << endl
-			<< "Porcentaje de entradas en espacios cerrados:  " << pcCloseIn << " %" << endl
-			<< endl
-			<< "+ Datos para computadoras (en segundos)" << endl
 			<< dOpenSpace/1000 << endl
 			<< dCentralSpace/1000 << endl
 			<< dCloseSpace/1000 << endl
-			<< pcOpen << endl
-			<< pcCentral << endl
-			<< pcClose << endl
-			<< OpenIn-1 << endl
+			<< OpenIn << endl
 			<< CenterIn << endl
 			<< CloseIn << endl
-			<< pcOpenIn << endl
-			<< pcCenterIn << endl
-			<< pcCloseIn << endl
 			<< endl;
 
-	// Mostramos los periodos como se registraron por el usuario
-	archivo << "Reporte completo de periodos en espacio abierto/central/cerrado" << endl
-			<< "respecto al inicio del registro:" << endl;
-	int actual, PosActualF;
-	long long int acum = 0;
+	// Salto de tiempo (ms) entre eventos, para análisis detallados
+	long long int PasoTiempo = 60000;
 
-	archivo << "----------------------------------" << endl
-			<< "|      Momento     |   Espacio   |" << endl
-			<< "----------------------------------" << endl;
-	for (int i=0; i<TiemposCont; i++){
-		PosActualF = OrdenEspacios[i];
-
-		actual = TiemposTri[PosActualF][i]; 			// Conversión a entero
-		acum += actual;
-		// Escribimos la información que se solicita
-		archivo << "|   " << FormatoReloj(acum) << "   ";
-
-		PosActualF = OrdenEspacios[i+1];
-		if (i+1 == TiemposCont){
-			archivo << "|   Termina   |" << endl;
-		} else if (PosActualF == 0){
-			archivo << "|   Abierto   |" << endl;
-		} else if (PosActualF == 1){
-			archivo << "|   Central   |" << endl;
-		} else if (PosActualF == 2){
-			archivo << "|   Cerrado   |" << endl;
-		}
+	// Tiempo en espacio abierto cada minuto
+	archivo << "# Time spent on open spaces every minute" << endl
+			<< endl
+			<< "## Data for humans" << endl
+			<< endl
+			<< "            Lapse           | Duration of activity" << endl
+			<< "----------------------------|----------------------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << FormatoReloj(TiempoActivo) << endl;
 	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << TiempoActivo << endl;
+	}
+	archivo << endl;
+
+	// Tiempo en espacio central cada minuto
+	archivo << "# Time spent on central space every minute" << endl
+			<< endl
+			<< "## Data for humans" << endl
+			<< endl
+			<< "            Lapse           | Duration of activity" << endl
+			<< "----------------------------|----------------------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(1, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << FormatoReloj(TiempoActivo) << endl;
+	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(1, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << TiempoActivo << endl;
+	}
+	archivo << endl;
+
+	// Tiempo en espacio cerrado cada minuto
+	archivo << "# Time spent on closed spaces every minute" << endl
+			<< endl
+			<< "## Data for humans" << endl
+			<< endl
+			<< "            Lapse           | Duration of activity" << endl
+			<< "----------------------------|----------------------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(2, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << FormatoReloj(TiempoActivo) << endl;
+	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(2, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << TiempoActivo << endl;
+	}
+	archivo << endl;
+
+	// Frecuencia de entradas a espacio abierto cada minuto
+ 	archivo << "# Entries to open spaces every minute" << endl
+			<< endl
+			<< "## Data for humans" << endl
+			<< endl
+			<< "            Lapse           | Entries" << endl
+			<< "----------------------------|---------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << EpisodiosAct << endl;
+	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << EpisodiosAct << endl;
+	}
+	archivo << endl;
+
+	// Frecuencia de entradas a espacio central cada minuto
+ 	archivo << "# Entries to central space every minute" << endl
+			<< endl
+			<< "## Data for humans" << endl
+			<< endl
+			<< "            Lapse           | Entries" << endl
+			<< "----------------------------|---------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(1, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << EpisodiosAct << endl;
+	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(1, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << EpisodiosAct << endl;
+	}
+	archivo << endl;
+
+	// Frecuencia de entradas a espacio cerrado cada minuto
+ 	archivo << "# Entries to closed spaces every minute" << endl
+			<< endl
+			<< "## Data for humans" << endl
+			<< endl
+			<< "            Lapse           | Entries" << endl
+			<< "----------------------------|---------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(2, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << EpisodiosAct << endl;
+	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(2, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << EpisodiosAct << endl;
+	}
+	archivo << endl;
+
+	// Mostramos los periodos como se registraron por el usuario
+	long long int acum = 0;
+	archivo << "# Full activity log" << endl
+			<< endl
+			<< "----------------------------------" << endl
+			<< "|       Time       |    Space    |" << endl
+			<< "----------------------------------" << endl;
+	for (int d=0; d < TiemposCont; d++){
+		archivo << "|   " << FormatoReloj(acum) << "   ";
+		switch (registro[0][d]){
+			case 0:
+				archivo << "|    Open     |";
+				break;
+			case 1:
+				archivo << "|    Central  |";
+				break;
+			case 2:
+				archivo << "|    Closed   |";
+				break;
+		}
+		archivo << endl;
+		acum += registro[1][d];
+	}
+	archivo << "|   " << FormatoReloj(acum) << "   |    Finish   |   " << endl
+			<< "----------------------------------" << endl;
 	
 	// Mostramos las entradas de tiempo originales
-	archivo << endl << endl << "Registro completo de deltas de tiempo (ms):" << endl;
+	archivo << endl
+			<< "# Full delta log"
+			<< endl;
 	for (int i=0; i<TiemposCont; i++){
-		archivo << OrdenEspacios[i] << " " << TiemposTri[ OrdenEspacios[i] ][i] << endl;
+		archivo << registro[0][i] << " " << registro[1][i] << endl;
 	}
 	archivo << "-1" << endl;
-	archivo << endl << endl << "Registro realizado con " << ATCRevision << " - rivel_co" << endl
-			<< "Fin del reporte" << endl;
+
+	// Indicamos fin del reporte y versión con el que se realizó
+	archivo << endl << endl << "> Report made with " << ATCRevision << " - rivel_co" << endl
+			<< endl
+			<< "End of the report" << endl;
 	// Terminamos de escribir y cerramos nuestro archivo
 	archivo.close();
 

@@ -1,6 +1,7 @@
-// Realiza el conteo estándar con dos estados
+// Conteo con 3 estados excluyentes y no continuos
+// Por lo tanto hay una entrada que indica que el evento anterior finalizó
 
-void ConteoTresEstados(){
+void ConteoTresEstadosNC(){
 	Cabecera("Perform a register");
 
 	// Variables para medir el tiempo
@@ -16,15 +17,17 @@ void ConteoTresEstados(){
 		registro[0][j] = 0;
 		registro[1][j] = 0;
 	}
-	cout << "    Press a key according to the location of the animal" << endl
-		 << "       " << PMOpen << " -> For open spaces" << endl
-		 << "       " << PMCenter << " -> For central space" << endl
-		 << "       " << PMClose << " -> For closed spaces" << endl
+	cout << "    Press a key according to the activity of the animal" << endl
+		 << "       " << ORObjectA << " -> For object " << TipoObjetoA << endl
+		 << "       " << ORObjectB << " -> For object " << TipoObjetoB << endl
+		 << "       " << ORGrooming << " -> For grooming" << endl
+		 << "       Any other key indicates that the animal is inactive" << endl
 		 << endl
 		 << "    You will get a visual confirmation in a color code" << endl
-		 << "       Green font  -> open space" << endl
-		 << "       Yellow font -> central space" << endl
-		 << "       Red font    -> closed space" << endl
+		 << "       Green font   -> object " << TipoObjetoA  << endl
+		 << "       Yellow font  -> object " << TipoObjetoB << endl
+		 << "       Red font     -> grooming " << endl
+		 << "       Withe font   -> inactive " << endl
 		 << endl
 		 << "    When you want to finish the register press: " << CharSalida << endl
 		 << endl
@@ -38,22 +41,22 @@ void ConteoTresEstados(){
 	letra = getch();
 	
 	// Mensaje al usuario de grabación
-	cout << "\n    Registering ...\n    ";
+	cout << "\n    Registering ...\n";
 	
 	// Mientras no excedamos 100000 entradas y no ingresemos el caracter de fin
 	for (i=0; letra != CharSalida && i < 100000; i++){
-		if (letra == PMOpen){
+		if (letra == ORObjectA){
 			registro[0][i] = 0;
 			system("color 0a");
-		} else if (letra == PMCenter){
+		} else if (letra == ORObjectB){
 			registro[0][i] = 1;
 			system("color 0e");
-		} else if (letra == PMClose){
+		} else if (letra == ORGrooming){
 			registro[0][i] = 2;
 			system("color 0c");
 		} else {
-			cout << "\n    Correction\n";
-			registro[0][i] = i > 0 ? registro[0][i-1] : 1;
+			registro[0][i] = 3;
+			system("color 07");
 		}
 		QueryPerformanceCounter(&t1);		// Definimos el t1
 		letra = getch();					// En espera de presionar el botón

@@ -3,133 +3,128 @@
 void InfoConteo(){
 	bool sigue = true;
 	while (sigue){
-		Cabecera("Datos del conteo");
+		Cabecera("Registry information");
 
 		if (ExpDia.size() > 0){	// true si ya se había realizado un registro
-			char opc;
-			cout << "    Acabas de usar los siguientes datos generales:" << endl
-				 << "    Fecha " << ExpDia << '-' << ExpMes << '-' << ExpAno << endl
-				 << "    Experimento " << TipoExperimento << endl
-				 << "    Tiempo " << FormatoReloj(TiempoRegis) << endl;
-
-			if (!SoloDeltas) cout << "    Caracter de salida " << CharSalida << endl;
-			if (TipoExperimento == "PM" && !SoloDeltas){
-				cout << endl
-					 << "    Y como indicadores de ubicaci\242n: " << endl
-					 << "       " << PMOpen << " -> Para espacios abiertos" << endl
-					 << "       " << PMCenter << " -> Para el espacio central" << endl
-					 << "       " << PMClose << " -> Para espacios cerrados" << endl;
-			}
-			cout << endl
-				 << "    \250Quieres volver a usar todos los datos anteriores? (S/N): ";
-			cin >> opc;
-			cout << endl;
-			if (opc == 'n' || opc == 'N'){
+			printPrevious();
+			cout << "    Do you want to use the same general information? (Y/N): ";
+			if (ValidarBooleano('N', 'Y')){
 				string viejoTipo = TipoExperimento;
 
-				cout << "    \250Quieres volver a usar la fecha " << ExpDia << '-' << ExpMes << '-' << ExpAno  << "? (S/N): ";
-				cin >> opc;
-				if (opc == 'n' || opc == 'N'){
-					cout << "    Ingresa la fecha en que se realiz\242 el experimento" << endl
-		 				 << "    D\241a, mes y a\244o a dos d\241gitos y separados por un espacio: ";
-					cin >> ExpDia >> ExpMes >> ExpAno;
-				}
+				cout << "    Do you want to use the date " << ExpDia << '-' << ExpMes << '-' << ExpAno  << "? (Y/N): ";
+				if (ValidarBooleano('N', 'Y')) setDate();
 				cout << endl;
 	
-				cout << "    \250Quieres volver a usar el tipo de experimento " << TipoExperimento << " ? (S/N): ";
-				cin >> opc;
-				if (opc == 'n' || opc == 'N'){
-					cout << "    Ingresa la prueba a registrar (TST, FST, PM): ";
-					cin >> TipoExperimento;
-				}
+				cout << "    Do you want to use again the " << TipoExperimento << " test" << " ? (Y/N): ";
+				if (ValidarBooleano('N', 'Y')) setExperiment();
 				cout << endl;
 				
-				cout << "    \250Quieres volver a ajustar a un tiempo de " << FormatoReloj(TiempoRegis) << " ? (S/N): ";
-				cin >> opc;
-				if (opc == 'n' || opc == 'N'){
-					cout << "    Ingresa el tiempo que quieres registrar o al que se ajustar\240 la prueba" << endl
-					 	 << "    Ingresa las horas espacio minutos espacio segundos: ";
-					cin >> TrHoras >> TrMins >> TrSegs;
-					TiempoRegis = (TrHoras*3600000) + (TrMins*60000) + (TrSegs*1000);
-				}
+				cout << "    Do you want to use as duration " << FormatoReloj(TiempoRegis) << " ? (Y/N): ";
+				if (ValidarBooleano('N', 'Y')) setDuration();
 				cout << endl;
 				
 				if (!SoloDeltas){
-					cout << "    \250Quieres volver a usar el caracter " << CharSalida << " para terminar? (S/N): ";
-					cin >> opc;
-					if (opc == 'n' || opc == 'N'){
-						cout << "    Ingresa el caracter con el que marcar\240s el fin del registro: ";
-						cin >> CharSalida;
-					}
+					cout << "    Dou you want to use again " << CharSalida << " as exit character? (Y/N): ";
+					if (ValidarBooleano('N', 'Y')) setControlsExit();
 					cout << endl;
 				}
-
-				if (viejoTipo == "PM" && TipoExperimento == "PM" && !SoloDeltas){
-					cout << "    \250Quieres volver a usar los caracteres: " << endl
-						 << "       " << PMOpen << " -> Para espacios abiertos" << endl
-						 << "       " << PMCenter << " -> Para el espacio central" << endl
-						 << "       " << PMClose << " -> Para espacios cerrados" << endl
-						 << "    para marcar las posiciones del animal? (S/N): ";
-					cin >> opc;
-					if (opc == 'n' || opc == 'N'){
-						cout << "    Ingresa el caracter para espacios abiertos: ";
-						cin >> PMOpen;
-						cout << "    Ingresa el caracter para el espacio central: ";
-						cin >> PMCenter;
-						cout << "    Ingresa el caracter para espacios cerrados: ";
-						cin >> PMClose;
+				char same;
+				if (TipoExperimento == "EPM"){
+					cout << "    It has been identified the test: Elevated Plus Maze" << endl;
+					if (!SoloDeltas){
+						same = true;
+						if (viejoTipo == "EPM"){
+							cout << "    Do you want to use again the next characters:" << endl
+								 << "       " << PMOpen << " -> For open spaces" << endl
+								 << "       " << PMCenter << " -> For central space" << endl
+								 << "       " << PMClose << " -> For closed spaces" << endl
+								 << "    to indicate the current location? (Y/N): ";
+							same = ValidarBooleano('N', 'Y');
+						}
+						if (same || viejoTipo != "EPM") setControlsEPM();
+					}	
+				} else if (TipoExperimento == "TCS"){
+					cout << "    It has been identified the test: Three Chamber Sociability" << endl
+						 << "    Is the test made for habituation or with the stranger? (H/S): ";
+					SIHabituacion = ValidarBooleano('H', 'S');
+					setExpTypeTCS(SIHabituacion);
+					if (!SoloDeltas){
+						same = true;
+						if (viejoTipo == "TCS"){
+							cout << "    Do you want to use the next characters: " << endl
+							 << "       " << SISpaceA << " -> For " << TipoEspacioA << endl
+							 << "       " << SISpaceB << " -> For " << TipoEspacioB << endl
+							 << "       " << SISpaceC << " -> For " << TipoEspacioC << endl
+							 << "       " << SIGrooming << " -> For grooming" << endl
+							 << "       " << SIInteract << " -> For interaction" << endl
+							 << "    to indicate the current location/activity? (Y/N): "
+							 << endl;
+							 same = ValidarBooleano('N', 'Y');
+						}
+						if (same || viejoTipo != "TCS") setControlsTCS();
 					}
-				} else if (viejoTipo != "PM" && TipoExperimento == "PM" && !SoloDeltas) {
-					cout << "    Se ha identificado la prueba: Plus Maze" << endl
-						 << "    Ingresa el caracter para espacios abiertos: ";
-					cin >> PMOpen;
-					cout << "    Ingresa el caracter para el espacio central: ";
-					cin >> PMCenter;
-					cout << "    Ingresa el caracter para espacios cerrados: ";
-					cin >> PMClose;
-					cout << endl;
+				} else if (TipoExperimento == "ORT"){
+					cout << "    It has been identified the test: Object Recognition test" << endl
+						 << "    Is the test made for habituation or with the novel object? (H/N): ";
+					ORHabituacion = ValidarBooleano('H', 'N');
+					setExpTypeORT(ORHabituacion);
+					if (!SoloDeltas){
+						same = true;
+						if (viejoTipo == "ORT"){
+							cout << "    Do you want to use again the next characters:" << endl
+								 << "       " << ORObjectA << " -> For " << TipoObjetoA << " object" << endl
+								 << "       " << ORObjectB << " -> For " << TipoObjetoB << " object" << endl
+								 << "       " << ORGrooming << " -> To indicate grooming" << endl
+								 << "    to indicate the current location? (Y/N): ";
+							same = ValidarBooleano('N', 'Y');
+						}
+						if (same || viejoTipo != "ORT") setControlsORT();
+					}	
 				}
 				cout << endl;
 			}
 		} else {
-			cout << "    Ingresa la fecha en que se realiz\242 el experimento" << endl
-		 		 << "    D\241a, mes y a\244o a dos d\241gitos y separados por un espacio: ";
-			cin >> ExpDia >> ExpMes >> ExpAno;
-			cout << endl;
-			
-			cout << "    Ingresa la prueba a registrar (TST, FST, PM): ";
-			cin >> TipoExperimento;
-			cout << endl;
-			
-			cout << "    Ingresa el tiempo que quieres registrar o al que se ajustar\240 la prueba" << endl
-				 << "    Ingresa las horas espacio minutos espacio segundos: ";
-			cin >> TrHoras >> TrMins >> TrSegs;
-			TiempoRegis = (TrHoras*3600000) + (TrMins*60000) + (TrSegs*1000);
-			cout << endl;
-			
-			if (!SoloDeltas){
-				cout << "    Ingresa el caracter con el que marcar\240s el fin del registro: ";
-				cin >> CharSalida;
-				cout << endl;
+			setDate();
+			setExperiment();
+			setDuration();
+			if (!SoloDeltas) setControlsExit();
 
-				if (TipoExperimento == "PM"){
-					cout << "    Se ha identificado la prueba: Plus Maze" << endl
-						 << "    Ingresa el caracter para espacios abiertos: ";
-					cin >> PMOpen;
-					cout << "    Ingresa el caracter para el espacio central: ";
-					cin >> PMCenter;
-					cout << "    Ingresa el caracter para espacios cerrados: ";
-					cin >> PMClose;
-					cout << endl;
+			if (TipoExperimento == "EPM"){
+				if (!SoloDeltas){
+					cout << "    It has been identified the test: Elevated Plus Maze" << endl;
+					setControlsEPM();
 				}
+			} else if (TipoExperimento == "TCS"){
+				cout << "    It has been identified the test: Three Chamber Sociability test" << endl
+					 << "    Is the test made for habituation or with the stranger? (H/S): ";
+				SIHabituacion = ValidarBooleano('H', 'S');
+				setExpTypeTCS(SIHabituacion);
+				if (!SoloDeltas) setControlsTCS();
+			} else if (TipoExperimento == "ORT"){
+				cout << "    It has been identified the test: Object Recognition test" << endl
+					 << "    Is the test made for habituation or with the novel object? (H/N): ";
+				ORHabituacion = ValidarBooleano('H', 'N');
+				setExpTypeORT(ORHabituacion);
+				if (!SoloDeltas) setControlsORT();
 			}
 		}
 		
-		cout << "    Ingresa el nombre control del animal a registrar sin espacios: ";
+		cout << "    Enter the ID of the animal to be registered (without spaces): ";
 		cin >> NombreControl;
 
 		// Nombre del archivo de salida
-		RegNombre = ExpDia + '-' + ExpMes + '-' + ExpAno + ' ' + TipoExperimento + ' ' + NombreControl;
+		// Formato `DD-MM-AA XXX-O ID.txt`
+		RegNombre = ExpDia + '-' + ExpMes + '-' + ExpAno;
+		RegNombre += ' ' + TipoExperimento;
+		if (TipoExperimento == "TCS"){
+			if (SIHabituacion) RegNombre += "-H";
+			else RegNombre += "-S";
+		}
+		if (TipoExperimento == "ORT"){
+			if (ORHabituacion) RegNombre += "-H";
+			else RegNombre += "-N";
+		}
+		RegNombre += ' ' + NombreControl;
 		// Extensión del archivo de salida
 		RegNombre += ".txt";
 		
@@ -142,45 +137,77 @@ void InfoConteo(){
 		CreateDirectory(RutaRegistro.c_str(), NULL);
 		RutaRegistro += '/';
 
-		if (TipoExperimento == "PM"){
-			TExpCompleto = "Plus Maze";
-			ExpIdentif = true;
-			if (!SoloDeltas) ConteoTresEstados();
-			else RegistrarDeltas(3);
-			cout << "    Guardando..." << endl;
-			RegistrarTresEstados();	// Guardamos
-			cout << "    Guardado finalizado" << endl << endl;
-		} else if (TipoExperimento == "TST"){
+		if (TipoExperimento == "TST"){
 			TExpCompleto = "Tail Suspension Test";
 			ExpIdentif = true;
-			if (!SoloDeltas) ConteoDosEstados();
+			if (!SoloDeltas) ConteoDosEstados(0);
 			else RegistrarDeltas(2);
-			cout << "    Guardando..." << endl;
-			RegistrarDosEstados();	// Guardamos
-			cout << "    Guardado finalizado" << endl << endl;
+			cout << "    Saving..." << endl;
+			RegistrarDosEstados(1);	// Guardamos
+			cout << "    Saved successfully" << endl << endl;
 		} else if (TipoExperimento == "FST"){
 			TExpCompleto = "Forced Swim Test";
 			ExpIdentif = true;
-			if (!SoloDeltas) ConteoDosEstados();
+			if (!SoloDeltas) ConteoDosEstados(0);
 			else RegistrarDeltas(2);
-			cout << "    Guardando..." << endl;
-			RegistrarDosEstados();	// Guardamos
-			cout << "    Guardado finalizado" << endl << endl;
+			cout << "    Saving..." << endl;
+			RegistrarDosEstados(1);	// Guardamos
+			cout << "    Saved successfully" << endl << endl;
+		} else if (TipoExperimento == "HBT"){
+			TExpCompleto = "Hole Board Test";
+			ExpIdentif = true;
+			if (!SoloDeltas) ConteoDosEstados(1);
+			else RegistrarDeltas(2);
+			cout << "    Saving..." << endl;
+			RegistrarDosEstados(0);	// Guardamos
+			cout << "    Saved successfully" << endl << endl;
+		} else if (TipoExperimento == "EPM"){
+			TExpCompleto = "Elevated Plus Maze";
+			ExpIdentif = true;
+			if (!SoloDeltas) ConteoTresEstados();
+			else RegistrarDeltas(3);
+			cout << "    Saving..." << endl;
+			RegistrarTresEstados();	// Guardamos
+			cout << "    Saved successfully" << endl << endl;
+		} else if (TipoExperimento == "TCS"){
+			TExpCompleto = TExpCompletof = "Three Chamber Sociability test";
+			if (SIHabituacion){
+				TExpCompleto += " - (habituation)";
+			} else {
+				TExpCompleto += " - (with stranger)";
+			}
+			ExpIdentif = true;
+			if (!SoloDeltas) ConteoTresyDosEstados();
+			else RegistrarDeltas(3);
+			cout << "    Saving..." << endl;
+			RegistrarTresyDosEstados();	// Guardamos
+			cout << "    Saved successfully" << endl << endl;
+		} else if (TipoExperimento == "ORT"){
+			TExpCompleto = TExpCompletof = "Object Recognition test";
+			if (ORHabituacion){
+				TExpCompleto += " - (habituation)";
+			} else {
+				TExpCompleto += " - (with stranger)";
+			}
+			ExpIdentif = true;
+			if (!SoloDeltas) ConteoTresEstadosNC();
+			else RegistrarDeltas(3);
+			cout << "    Saving..." << endl;
+			RegistrarTresEstadosNC();	// Guardamos
+			cout << "    Saved successfully" << endl << endl;
 		} else {
-			TExpCompleto = "No identificado :c";
+			TExpCompleto = "Unidentified test";
 			ExpIdentif = false;
-			if (!SoloDeltas) ConteoDosEstados();
+			if (!SoloDeltas) ConteoDosEstados(0);
 			else RegistrarDeltas(2);
-			cout << "    Guardando..." << endl;
-			RegistrarDosEstados();	// Guardamos
-			cout << "    Guardado finalizado" << endl << endl;
+			cout << "    Saving..." << endl;
+			RegistrarDosEstados(1);	// Guardamos
+			cout << "    Saved successfully" << endl << endl;
 		}
 
-		char otro;
-		if (!SoloDeltas) cout << "    \250Realizar otro registro? (S/N): ";
-		else cout << "    \250Realizar otro an\240lisis por deltas? (S/N): ";
-		cin >> otro;
-		sigue = otro == 's' || otro == 'S';
+		if (!SoloDeltas) cout << "    Do another record? (Y/N): ";
+		else cout << "    Do another record using deltas? (Y/N): ";
+		sigue = ValidarBooleano('Y', 'N');
 	}
 	return;	
 }

@@ -1,34 +1,41 @@
 // Realiza el conteo estándar con dos estados
-
-void ConteoDosEstados(){
-	Cabecera("Conteo");
+// Conteo Two-States-Active (empieza con actividad)
+// 'ActIni' es la actividad con la que inicia 0/1
+//          donde 0 es activo y 1 es inactivo
+void ConteoDosEstados(int ActIni){
+	Cabecera("Perform a register");
 
 	// Variables para medir el tiempo
 	li freq, t1, t2;
-	int i; // Para el ciclo
+	int i=0; // Para el ciclo
 	
 	// Caracter de apoyo, será las entradas del usuario
 	char letra;
+
+	// Inicializamos el arreglo de registro
+	for (int j=0; j<100000; j++){
+		registro[0][j] = 0;
+		registro[1][j] = 0;
+	}
 	
 	// Mensaje al usuario de espera
 	InfoGrlRegistro();
-	cout << "    Presiona cualquier tecla cuando comience el video" << endl 
+	cout << "    Press any key when you want to start the register" << endl 
 	     << endl
-		 << "    Cada que el animal cambie de estado activo/inactivo presiona" << endl
-		 << "    cualquier tecla excepto " << CharSalida << endl 
+		 << "    Any time the animal change its state (active/inactive)" << endl
+		 << "    press any key except: " << CharSalida << endl 
 		 << endl
-		 << "    Recibir\240s un color de confirmaci\242n del estado del animal" << endl
-		 << "       Texto verde -> estado activo" << endl
-		 << "       Texto rojo  -> estado inactivo" << endl
+		 << "    You will get a visual confirmation in a color code" << endl
+		 << "       Green font -> active state" << endl
+		 << "       Red font   -> inactive state" << endl
 		 << endl
-		 << "    Cuando quieras terminar el registro presiona el caracter " << CharSalida << endl
+		 << "    When you want to finish the register press: " << CharSalida << endl
 		 << endl
-		 << "    Esperando el comienzo de conteo ...";
+		 << "    Waiting for the start of the register ...";
 	RegNombre.insert(0, RutaRegistro);
-	// Se indica el tiempo 0
-	tiempos[0] = 0;
-	// Declaración de la bandera de cambio de estados
-	bool cambio = true;
+
+	// Variable control de actividad
+	int actividad = ActIni;
 
 	// Obtenemos la frecuencia
 	QueryPerformanceFrequency(&freq);
@@ -37,41 +44,31 @@ void ConteoDosEstados(){
 	letra = getch();
 	
 	// Mensaje al usuario de grabación
-	cout << "\n    Contando ...\n";
+	cout << "\n    Registering ...\n";
 	
 	// Mientras no excedamos 100000 entradas y no ingresemos el caracter de fin
-	for (i=1; letra != CharSalida && i < 100000; i++){
+	for (i=0; letra != CharSalida && i < 100000; i++){
 		QueryPerformanceCounter(&t1);		// Definimos el t1
-		if (cambio){	// Cambio en la bandera
+		if (!actividad){	// Cambio en la bandera
 			system("color 0a");		// Color verde = activo
-			cambio = false;
 		} else {
 			system("color 0c");		// Color rojo = inactivo
-			cambio = true;
 		}
 		letra = getch();					// En espera de presionar el botón
 		QueryPerformanceCounter(&t2);		// Definimos el t2
+		// Guardamos la actividad que estaba realizando (0 o 1)
+		registro[0][i] = actividad;
 		// Calculamos la diferencia de tiempos, en milisegundos y según la frecuencia
-		tiempos[i] = (t2.QuadPart - t1.QuadPart) * 1000.0 / freq.QuadPart;
+		registro[1][i] = (t2.QuadPart - t1.QuadPart) * 1000.0 / freq.QuadPart;
+		actividad = actividad > 0 ? 0 : 1; // Invertimos el valor de la actividad
 	}
 	
 	system("color 07");		// Regresamos al blanco y negro
-
-	/*	El primer dígito es el color del fondo y el segundo el del texto
-
-	0 = Negro       8 = Gris
-	1 = Azul        9 = Azul claro
-	2 = Verde       A = Verde claro
-	3 = Aguamarina  B = Aguamarina claro
-	4 = Rojo        C = Rojo claro
-	5 = Púrpura     D = Púrpura claro
-	6 = Amarillo    E = Amarillo claro
-	7 = Blanco      F = Blanco brillante	*/	
 
 	// Determinamos la cantidad de cambios de estado
 	TiemposCont = i;
 	
 	// Mensaje al usuario de fin del conteo
-	cout << endl << "    Conteo terminado" << endl << endl;
+	cout << endl << "    End of the register" << endl << endl;
 	return;
 }

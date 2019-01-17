@@ -1,219 +1,201 @@
 // Función que guarda en un archivo los datos obtenidos del conteo
-
-void RegistrarDosEstados(){
+// 'ActLat' determina el tipo de actividad que nos interesa para latencia
+void RegistrarDosEstados(int ActLat){
+	AgregarComentario();
+	AjustarVelocidad();
 	// Creamos la variable que será nuestro archivo
 	ofstream archivo;
 	// Abrimos nuestro archivo, está listo para escribir en él
-	archivo.open(RegNombre);
-	
-	TiempoTotal = 0;
-	for (int j=0; j < TiemposCont; j++){
-		TiempoTotal += tiempos[j];
-	}
-	TiempoOficial = min(TiempoTotal, TiempoRegis);
+	archivo.open(RegNombre.c_str());
 
-	double dTiempoActivo = TiempoActivo,
-		   dTiempoOficial = TiempoOficial,
-		   dtPrimero = tPrimero,
-		   dMayAct = MayAct,
-		   dMayInact = MayInact,
-		   dPromAct = PromAct,
-		   dPromInact = PromInact;
+	// Calculamos el tiempo real de registro y se selecciona el oficial
+	TiempoTotal = TiempoRealT1();
+	TiempoOficial = min(TiempoTotal, TiempoRegis);
 
 	// Mostramos un resumen de los datos
 	archivo << "Animal ID: " << NombreControl << endl
-			<< "Prueba realizada: " << TipoExperimento << " -> " << TExpCompleto << endl
-			<< "Fecha del experimento: " << ExpDia << "-" << ExpMes << "-" << ExpAno << endl << endl
-			
-			<< "Tiempo especificado por el usuario: " << FormatoReloj(TiempoRegis) << endl
-			<< "Tiempo total registrado: " << FormatoReloj(TiempoTotal) << endl << endl
-			
-			<< "Las siguientes estadísticas se evaluaron en base al tiempo: " << FormatoReloj(TiempoOficial) << endl << endl;
+			<< "Test performed: " << TipoExperimento << " -> " << TExpCompleto << endl
+			<< "Test date: " << ExpDia << "-" << ExpMes << "-" << ExpAno << endl
+			<< "Aditional comments: " << Comentario << endl
+			<< endl
+			<< "Test duration specified by user: " << FormatoReloj(TiempoRegis) << endl
+			<< "Total time registered: " << FormatoReloj(TiempoTotal) << endl
+			<< "The delta times generated in the register were multplied by a factor of: " << SpeedFactor << endl
+			<< endl
+			<< "The following statistics has been made using the duration: " << FormatoReloj(TiempoOficial) << endl
+			<< endl;
 
-	double pcActivo = PorcentajeActividad(0, TiempoOficial);
-	double pcInactivo = 100 - pcActivo;
-	dTiempoActivo = TiempoActivo, dTiempoOficial = TiempoOficial, dtPrimero = tPrimero, 
-	dMayAct = MayAct, dMayInact = MayInact, dPromAct = PromAct, dPromInact = PromInact;
-	archivo	<< "Para todo el intervalo usado"<< endl
+	// Se calculan todos los generales, desde el inicio hasta el final del tiempo oficial
+ 	TiempoActivo = ActividadDetalle(0, 0, TiempoOficial, registro, TiemposCont);
+ 	EpisodiosAct = FrecuenciaActividad(0, 0, TiempoOficial, registro, TiemposCont);
+ 	EpisodiosInact = FrecuenciaActividad(1, 0, TiempoOficial, registro, TiemposCont);
+ 	LatenciaAct = LatenciaActividad(ActLat, 0, TiempoOficial, registro, TiemposCont);
+ 	// Variables para mostrar los milisegundos en segundos
+ 	long double dTiempoActivo = TiempoActivo,
+		   		dTiempoOficial = TiempoOficial,
+		   		dLatenciaAct = LatenciaAct;
+
+	// El título de actividad/inactividad varía según la actividad con la que inicie
+	string LatTxt;
+	if (ActLat){
+		LatTxt = "Inactivity";
+	} else {
+		LatTxt = "Activity  ";
+	}
+ 
+ 	// Se muestra el registro tal cual
+	archivo	<< "# For the hole interval"<< endl
 			<< endl
-			<< "- Datos para humanos" << endl
-			<< "Tiempo de actividad:             " << FormatoReloj(TiempoActivo) << endl
-			<< "Tiempo de inactividad:           " << FormatoReloj(TiempoOficial-TiempoActivo) << endl
-			<< "Porcentaje de actividad:         " << pcActivo << " %" << endl
-			<< "Porcentaje de inactividad:       " << pcInactivo << " %" << endl
-			<< "Tiempo a primera inactividad:    " << FormatoReloj(tPrimero) << endl
-			<< "Mayor periodo de actividad:      " << FormatoReloj(MayAct) << endl
-			<< "Mayor periodo de inactividad:    " << FormatoReloj(MayInact) << endl
-			<< "Promedio de fase de actividad:   " << FormatoReloj(PromAct) << endl
-			<< "Promedio de fase de inactividad: " << FormatoReloj(PromInact) << endl
-			<< "Episodios de actividad:   		 " << EpisodiosAct << endl
-			<< "Episodios de inactividad: 		 " << EpisodiosInact << endl
+			<< "## Data for humans" << endl
 			<< endl
-			<< "+ Datos para computadoras (en segundos):" << endl
+			<< "Activity duration:     " << FormatoReloj(TiempoActivo) << endl
+			<< "Inactivity duration:   " << FormatoReloj(TiempoOficial-TiempoActivo) << endl
+			<< LatTxt << " latency:     " << FormatoReloj(LatenciaAct) << endl
+			<< "Activity episodes:     " << EpisodiosAct << endl
+			<< "Inactivity episodes:   " << EpisodiosInact << endl
+			<< endl
+			<< "## Data for computers (seconds)" << endl
+			<< endl
 			<< dTiempoActivo/1000 << endl
 			<< (dTiempoOficial-dTiempoActivo)/1000 << endl
-			<< pcActivo << endl
-			<< pcInactivo << endl
-			<< dtPrimero/1000 << endl
-			<< dMayAct/1000 << endl
-			<< dMayInact/1000 << endl
-			<< dPromAct/1000 << endl
-			<< dPromInact/1000 << endl
+			<< dLatenciaAct/1000 << endl
 			<< EpisodiosAct << endl
 			<< EpisodiosInact  << endl
 			<< endl;
 
-	long long int TiempoMinutoResto = TiempoOficial%60000,
-				  TiempoMinutos = TiempoOficial;
-	archivo << "Porcentaje de actividad por cada minuto" << endl
+	// Salto de tiempo (ms) entre eventos, para análisis detallados
+	long long int PasoTiempo;
+	
+	int bloques = 0;
+	// Tiempo de actividad cada minuto
+	PasoTiempo = 60000;
+	archivo << "# Activity duration every minute" << endl
 			<< endl
-			<< "- Datos para humanos" << endl
-			<< "Del minuto   al     minuto  | Actividad (porcentaje)" << endl;
-	for (int i=0; i<TiempoMinutos; i+=60000){
-		if (TiempoMinutoResto && i+60000 >= TiempoMinutos){
-			pcActivo = PorcentajeActividad(i, TiempoMinutoResto);
-		} else {
-			pcActivo = PorcentajeActividad(i, 60000);
-		}
-		archivo << FormatoReloj(i) << " - " << FormatoReloj(i+60000) << " | " << pcActivo << endl;
-	}
-	archivo << endl << "+ Datos para computadoras (porcentaje):" << endl;
-	if (TiempoMinutoResto){
-		archivo << (TiempoMinutos/60000) + 1 << endl;
-	} else {
-		archivo << TiempoMinutos/60000 << endl;
-	}
-	for (int i=0; i<TiempoMinutos; i+=60000){
-		if (TiempoMinutoResto && i+60000 >= TiempoMinutos){
-			pcActivo = PorcentajeActividad(i, TiempoMinutoResto);
-		} else {
-			pcActivo = PorcentajeActividad(i, 60000);
-		}
-		archivo << pcActivo << endl;
-	}
-	archivo << endl;
-
-	archivo << "Tiempo de actividad por cada minuto" << endl
+			<< "## Data for humans" << endl
 			<< endl
-			<< "- Datos para humanos" << endl
-			<< "Del minuto   al     minuto  | Actividad (tiempo)" << endl;
-	for (int i=0; i<TiempoMinutos; i+=60000){
-		if (TiempoMinutoResto && i+60000 >= TiempoMinutos){
-			pcActivo = PorcentajeActividad(i, TiempoMinutoResto);
-		} else {
-			pcActivo = PorcentajeActividad(i, 60000);
-		}
-		archivo << FormatoReloj(i) << " - " << FormatoReloj(i+60000) << " | " << FormatoReloj(TiempoActivo) << endl;
+			<< "            Lapse           | Duration of activity" << endl
+			<< "----------------------------|----------------------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << FormatoReloj(TiempoActivo) << endl;
 	}
-	archivo << endl << "+ Datos para computadoras (milisegundos):" << endl;
-	if (TiempoMinutoResto){
-		archivo << (TiempoMinutos/60000) + 1 << endl;
-	} else {
-		archivo << TiempoMinutos/60000 << endl;
-	}
-	for (int i=0; i<TiempoMinutos; i+=60000){
-		if (TiempoMinutoResto && i+60000 >= TiempoMinutos){
-			pcActivo = PorcentajeActividad(i, TiempoMinutoResto);
-		} else {
-			pcActivo = PorcentajeActividad(i, 60000);
-		}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	bloques = TiempoOficial/PasoTiempo;
+	if (bloques*PasoTiempo < TiempoOficial) bloques++;
+	archivo << bloques << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(0, d, d+PasoTiempo, registro, TiemposCont);
 		archivo << TiempoActivo << endl;
 	}
 	archivo << endl;
-	/*
-	pcActivo = PorcentajeActividad(TiempoOficial/6, 4*TiempoOficial/6);
-	pcInactivo = 100 - pcActivo;
-	dTiempoActivo = TiempoActivo, dTiempoOficial = TiempoOficial, dtPrimero = tPrimero, 
-	dMayAct = MayAct, dMayInact = MayInact, dPromAct = PromAct, dPromInact = PromInact;
-	archivo << "Para los 4/6 intermedios del intervalo usado:" << endl
-			<< endl
-			<< "- Datos para humanos" << endl
-			<< "Tiempo de actividad:             " << FormatoReloj(TiempoActivo) << endl
-			<< "Tiempo de inactividad:           " << FormatoReloj((4*TiempoOficial/6)-TiempoActivo) << endl
-			<< "Porcentaje de actividad:         " << pcActivo << " %" << endl
-			<< "Porcentaje de inactividad:       " << pcInactivo << " %" << endl
-			<< "Tiempo a primera inactividad:    " << FormatoReloj(tPrimero) << endl
-			<< "Mayor periodo de actividad:      " << FormatoReloj(MayAct) << endl
-			<< "Mayor periodo de inactividad:    " << FormatoReloj(MayInact) << endl
-			<< "Promedio de fase de actividad:   " << FormatoReloj(PromAct) << endl
-			<< "Promedio de fase de inactividad: " << FormatoReloj(PromInact) << endl
-			<< "Episodios de actividad:   		 " << EpisodiosAct << endl
-			<< "Episodios de inactividad: 		 " << EpisodiosInact << endl
-			<< endl
-			<< "+ Datos para computadoras (en segundos):" << endl
-			<< dTiempoActivo/1000 << endl
-			<< ((4*dTiempoOficial/6)-dTiempoActivo)/1000 << endl
-			<< pcActivo << endl
-			<< pcInactivo << endl
-			<< dtPrimero/1000 << endl
-			<< dMayAct/1000 << endl
-			<< dMayInact/1000 << endl
-			<< dPromAct/1000 << endl
-			<< dPromInact/1000 << endl
-			<< EpisodiosAct << endl
-			<< EpisodiosInact  << endl
-			<< endl;
 
-	pcActivo = PorcentajeActividad(TiempoOficial/3, 2*TiempoOficial/3);
-	pcInactivo = 100 - pcActivo;
-	dTiempoActivo = TiempoActivo, dTiempoOficial = TiempoOficial, dtPrimero = tPrimero,
-	dMayAct = MayAct, dMayInact = MayInact, dPromAct = PromAct, dPromInact = PromInact;
-	archivo << "Para los últimos 2/3 del intervalo usado:" << endl
+	// Tiempo de actividad cada 30 segundos
+	PasoTiempo = 30000;
+	archivo << "# Activity duration every 30 seconds" << endl
 			<< endl
-			<< "- Datos para humanos" << endl
-			<< "Tiempo de actividad:             " << FormatoReloj(TiempoActivo) << endl
-			<< "Tiempo de inactividad:           " << FormatoReloj((2*TiempoOficial/3)-TiempoActivo) << endl
-			<< "Porcentaje de actividad:         " << pcActivo << " %" << endl
-			<< "Porcentaje de inactividad:       " << pcInactivo << " %" << endl
-			<< "Tiempo a primera inactividad:    " << FormatoReloj(tPrimero) << endl
-			<< "Mayor periodo de actividad:      " << FormatoReloj(MayAct) << endl
-			<< "Mayor periodo de inactividad:    " << FormatoReloj(MayInact) << endl
-			<< "Promedio de fase de actividad:   " << FormatoReloj(PromAct) << endl
-			<< "Promedio de fase de inactividad: " << FormatoReloj(PromInact) << endl
-			<< "Episodios de actividad:   		 " << EpisodiosAct << endl
-			<< "Episodios de inactividad: 		 " << EpisodiosInact << endl
+			<< "## Data for humans" << endl
 			<< endl
-			<< "+ Datos para computadoras (en segundos):" << endl
-			<< dTiempoActivo/1000 << endl
-			<< ((2*dTiempoOficial/3)-dTiempoActivo)/1000 << endl
-			<< pcActivo << endl
-			<< pcInactivo << endl
-			<< dtPrimero/1000 << endl
-			<< dMayAct/1000 << endl
-			<< dMayInact/1000 << endl
-			<< dPromAct/1000 << endl
-			<< dPromInact/1000 << endl
-			<< EpisodiosAct << endl
-			<< EpisodiosInact  << endl
-			<< endl;
-	*/
-	// Mostramos los periodos como se registraron por el usuario
-	archivo << "Reporte completo de periodos actividad/inactividad" << endl
-			<< "respecto al inicio del registro:" << endl;
-	int hora = 0, minuto = 0, segundo = 0, milesima = 0;
-	int actual;
-	archivo << "-----------------------------------------------------------" << endl
-			<< "|     Inicio actividad       |     Inicio inactividad     |" << endl
-			<< "-----------------------------------------------------------" << endl;
-	long long int acum = 0;
-	for (int i=0; i<TiemposCont; i++){
-		actual = tiempos[i]; 			// Conversión a entero
-		acum += actual;
-		// Escribimos la información que se solicita
-		archivo << "|     " << FormatoReloj(acum) << "           ";
-		// Formato estilo tabla
-		if (i%2 == 1)	archivo << "|\n";
+			<< "            Lapse           | Duration of activity" << endl
+			<< "----------------------------|----------------------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << FormatoReloj(TiempoActivo) << endl;
 	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	bloques = TiempoOficial/PasoTiempo;
+	if (bloques*PasoTiempo < TiempoOficial) bloques++;
+	archivo << bloques << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		TiempoActivo = ActividadDetalle(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << TiempoActivo << endl;
+	}
+	archivo << endl;
+
+	// Frecuencia de actividad cada minuto
+	PasoTiempo = 60000;
+ 	archivo << "# Activity frequency every minute" << endl
+			<< endl
+			<< "## Data for humans" << endl
+			<< endl
+			<< "            Lapse           | Repetitions" << endl
+			<< "----------------------------|-------------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << EpisodiosAct << endl;
+	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << EpisodiosAct << endl;
+	}
+	archivo << endl;
+
+	// Frecuencia de actividad cada 30 segundos
+	PasoTiempo = 30000;
+	archivo << "# Activity frequency every 30 seconds" << endl
+			<< endl
+			<< "## Data for humans" << endl
+			<< endl
+			<< "            Lapse           | Repetitions" << endl
+			<< "----------------------------|-------------" << endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << FormatoReloj(d) << " - " << FormatoReloj(d+PasoTiempo) 
+				<< " | " << EpisodiosAct << endl;
+	}
+	archivo << endl 
+			<< "## Data for computers (ms)" << endl
+			<< endl;
+	for (int d=0; d < TiempoOficial; d+=PasoTiempo){
+		EpisodiosAct = FrecuenciaActividad(0, d, d+PasoTiempo, registro, TiemposCont);
+		archivo << EpisodiosAct << endl;
+	}
+	archivo << endl;
 	
+	// Mostramos los periodos como se registraron por el usuario
+	long long int acum = 0;
+	archivo << "# Full activity log" << endl
+			<< endl
+			<< "----------------------------------" << endl
+			<< "|       Time       |  Activity   |" << endl
+			<< "----------------------------------" << endl;
+	for (int d=0; d < TiemposCont; d++){
+		archivo << "|   " << FormatoReloj(acum) << "   ";
+		switch (registro[0][d]){
+			case 0:
+				archivo << "|  Active     |" << endl;
+				break;
+			case 1:
+				archivo << "|  Inactive   |" << endl;
+				break;
+		}
+		acum += registro[1][d];
+	}
+	archivo << "|   " <<  FormatoReloj(acum) << "   |  Finish     |   " << endl
+			<< "----------------------------------" << endl;
+
 	// Mostramos las entradas de tiempo originales
-	archivo << endl << endl << "Registro completo de deltas de tiempo (ms):" << endl;
+	archivo << endl
+			<< "# Full delta log" << endl
+			<< endl;
 	for (int i=0; i<TiemposCont; i++){
-		archivo << tiempos[i] << endl;
+		archivo << registro[0][i] << " " << registro[1][i] << endl;
 	}
 	archivo << "-1" << endl;
 
-	archivo << endl << endl << "Registro realizado con " << ATCRevision << " - rivel_co" << endl
-			<< "Fin del reporte" << endl;
+	// Indicamos fin del reporte y versión con el que se realizó
+	archivo << endl << endl << "> Report made with " << ATCRevision << " - rivel_co" << endl
+			<< endl
+			<< "End of the report" << endl;
 	// Terminamos de escribir y cerramos nuestro archivo
 	archivo.close();
 

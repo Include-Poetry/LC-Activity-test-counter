@@ -1,4 +1,4 @@
-/* Código fuente y concepto elaborado por:
+/* Source code and concept by:
 	>_ Ricardo Velázquez Contreras - rivel_co
 	www.include-poetry.com/Equipo/rivel_co/
 */
@@ -10,16 +10,23 @@
 #include <iomanip>
 #include <cmath>
 #include <queue>
+#include <string>
 using namespace std;
 
 #define li LARGE_INTEGER
+#define MAX 100000
+
+// Por eliminar
+long long int MayAct, MayInact, tPrimero;
 
 // Versión actual
-string ATCRevision = "Activity Test Counter v0.4";
+string ATCRevision = "Activity Test Counter v0.5";
 // Almacenamiento de tiempos en milisegundos
-long long int tiempos[100000];
+long long int registro[2][100000];
+long long int registroMin[2][MAX];
+long long int tiempos[100000]; // Por eliminar
 // Almacenamiento de tiempo para triple estado
-long long int TiemposTri[3][100000];
+long long int TiemposTri[5][100000];
 long long int OrdenEspacios[100000];
 // Optimización de tiempos
 long double TiemposOpti[100][600];
@@ -40,42 +47,99 @@ string RegNombre, 		// Nombre del registro actual
 
 // Cantidad de tiempos registrados
 int TiemposCont;
+int TiemposContMin;
 // Tipo del experimento realizado y su nombre completo
 string TipoExperimento, TExpCompleto;
 // Bandera de experimento identificado
 bool ExpIdentif;
+// Variables de interacción social;
+bool SIHabituacion;
+long long int SILatencyGroo, SILatencyInter;
+char SISpaceA,			// Espacios abiertos
+	 SISpaceB,			// Espacio del centro
+	 SISpaceC,			// Espacios cerrados
+	 SIGrooming,		// Espacio donde está el extraño
+	 SIInteract;		// Espacio donde está libre
+string TipoEspacioA,	// Cadena para espacio A
+	   TipoEspacioB,	// Cadena para espacio B
+	   TipoEspacioC;	// Cadena para espacio C
+// Porque la basura no me deja usar acentos
+string TipoEspacioAf,	// Cadena para espacio A
+	   TipoEspacioBf,	// Cadena para espacio B
+	   TipoEspacioCf,	// Cadena para espacio C
+	   TExpCompletof;
+// Variables para reconocimiento de objeto
+bool ORHabituacion;
+int RegistrosORT[2][100000];
+long long int ORLatencyGroo, ORLatencyInter;
+char ORObjectA,			// Objeto A
+	 ORObjectB,			// Objeto B
+	 ORGrooming;		// Grooming
+string TipoObjetoA,		// Cadena para objeto A
+	   TipoObjetoB;		// Cadena para objeto B
+// Variable para color dinámico de la consola
+string ConsoleColor;
 // Tiempo que dura la prueba para el evaluador
 long long int TrHoras, TrMins, TrSegs, TiempoRegis;
 // Caracter de salida con valor default
 char CharSalida = '.';
+
 // Caracteres para Plus Maze
 char PMOpen,	// Espacios abiertos
 	 PMCenter,	// Espacio del centro
 	 PMClose;	// Espacios cerrados
-// Tiempo de actividad total
+long long int OpenSpace, CloseSpace, CentralSpace; // Tiempo en cada espacio
+int OpenIn, CloseIn, CenterIn; // Frecuencia en cada espacio
+
+// Tiempos para dos estados
 long long int TiempoTotal,
 			  TiempoActivo, // Tiempo de actividad
 			  TiempoOficial;
-long long int tPrimero;
-long long int MayAct, MayInact;
+long long int LatenciaAct;
 long long int EpisodiosAct, EpisodiosInact;
+
+// Variables de opciones extra
+double SpeedFactor = 1;
+string Comentario = "";
 
 #include "FAux/Formato.h"
 #include "FAux/FormatoReloj.h"
-#include "FAux/PorcentajeActividad.h"
+#include "FAux/ActividadDetalle.h"
+#include "FAux/FrecuenciaActividad.h"
+#include "FAux/LatenciaActividad.h"
+#include "FAux/TiempoRealT1.h"
 #include "FAux/ValidarBooleano.h"
+#include "FAux/AjustarVelocidad.h"
+#include "FAux/AgregarComentario.h"
+#include "FAux/CompactarActividad.h"
+#include "FAux/printPrevious.h"
+
+#include "setControls/setControlsEPM.h"
+#include "setControls/setControlsORT.h"
+#include "setControls/setControlsTCS.h"
+#include "setControls/setControlsExit.h"
+
+#include "setInfo/setDate.h"
+#include "setInfo/setDuration.h"
+#include "setInfo/setExperiment.h"
+#include "setInfo/setExpTypeORT.h"
+#include "setInfo/setExpTypeTCS.h"
 
 #include "MMenu/Cabecera.h"
 #include "MMenu/InfoGrlRegistro.h"
 #include "MMenu/SobreElPrograma.h"
 
 #include "FConteo/RegistrarDeltas.h"
+#include "FConteo/ConteoDosEstados.h"
 #include "FConteo/RegistrarDosEstados.h"
+#include "FConteo/ConteoTresEstados.h"
 #include "FConteo/RegistrarTresEstados.h"
+#include "FConteo/ConteoTresyDosEstados.h"
+#include "FConteo/RegistrarTresyDosEstados.h"
+#include "FConteo/ConteoTresEstadosNC.h"
+#include "FConteo/RegistrarTresEstadosNC.h"
 #include "FConteo/PeriodoOptimo.h"
 #include "FConteo/DiferenciasOptimasDos.h"
-#include "FConteo/ConteoDosEstados.h"
-#include "FConteo/ConteoTresEstados.h"
 #include "FConteo/InfoConteo.h"
 
 int main(){
@@ -85,14 +149,14 @@ int main(){
 	bool menu = true, menu2 = true;
 	int opc, opc2;
 	while(menu){
-		Cabecera("Men\243");
-		cout << "    1- Realizar un conteo est\240ndar" << endl
-			 << "    2- Realizar un an\240lisis por deltas de tiempo" << endl
-			 << "    3- Realizar una b\243squeda" << endl
-			 << "    4- Sobre este programa" << endl
-			 << "    5- Salir" << endl
+		Cabecera("Menu");
+		cout << "    1- Perform a regular analisis" << endl
+			 << "    2- Perform an analysis using time deltas" << endl
+			 << "    3- Perform a search" << endl
+			 << "    4- About this program" << endl
+			 << "    5- Exit" << endl
 			 << endl
-			 << "    N\243mero de tu elecci\242n: ";
+			 << "    Number of your choice: ";
 		cin >> opc;
 		switch(opc){
 			case 1:
@@ -106,12 +170,12 @@ int main(){
 			case 3:
 				menu2 = true;
 				while (menu2){
-					Cabecera("Men\243 de b\243squedas");
-					cout << "    1- B\243squeda de bloque \242ptimo de dos estados" << endl
-				 		 << "    2- B\243squeda de diferencias \242ptimas de dos estados" << endl
-				 		 << "    3- Volver al men\243 anterior" << endl
+					Cabecera("Search menu");
+					cout << "    1- Search for optimal block in two-state tests" << endl
+				 		 << "    2- Search for optimal differences in two-state tests" << endl
+				 		 << "    3- Back to main menu" << endl
 				 		 << endl
-				 		 << "    N\243mero de tu elecci\242n: ";
+				 		 << "    Number of your choice: ";
 				 	cin >> opc2;
 				 	switch(opc2){
 				 		case 1:
@@ -125,7 +189,7 @@ int main(){
 						case 3:
 							menu2 = false;
 						default:
-							cout << "    Ingresa una opci\242n v\240lida" << endl;
+							cout << "    Enter a valid option" << endl;
 							break;
 				 	}
 				}
@@ -137,7 +201,7 @@ int main(){
 				menu = false;
 				break;
 			default:
-				cout << "    Ingresa una opci\242n v\240lida" << endl;
+				cout << "    Enter a valid option" << endl;
 				break;
 		}
 	}

@@ -72,7 +72,7 @@ void ConteoTresyDosEstados(){
 			registro[0][i] = 4;
 			ConsoleColor[6] = '8';
 		} else {
-			registro[0][i] = 5;
+			registro[0][i] = i > 0 ? 5 : 1;
 			ConsoleColor[6] = '0';
 		}
 		system(ConsoleColor.c_str());		// Marcamos el nuevo color

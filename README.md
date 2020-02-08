@@ -256,6 +256,12 @@ Este programa y el concepto fue realizado como una herramienta de apoyo, inicial
 
 ***Más sobre el desarrollador en:*** [Github](https://github.com/Include-Poetry/ "rivel_co").
 
+### Cómo citar este programa
+
+Si este programa te es de utilidad en tu investigación, por favor cítalo utilizando el siguiente formato:
+
+> Velázquez R. (2020). Activity test counter (v0.5.1) [Computer software]. Retrieved from https://github.com/Include-Poetry/LC-Activity-test-counter
+
 ### Licencia
 
 [GNU General Public License v3.0](https://github.com/Include-Poetry/LC-Activity-test-counter/blob/master/LICENSE "Licencia completa").

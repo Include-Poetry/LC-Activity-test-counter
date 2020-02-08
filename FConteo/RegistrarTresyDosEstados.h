@@ -12,6 +12,10 @@ void RegistrarTresyDosEstados(){
 	TiempoTotal = TiempoRealT1();
 	TiempoOficial = min(TiempoTotal, TiempoRegis);
 
+	// Obtenemos e imprimimos la cita
+	string cite = citeFormat();
+	archivo << endl << cite << endl << endl;
+
 	// Mostramos un resumen de los datos
 	archivo << "Animal ID: " << NombreControl << endl
 			<< "Test performed: " << TipoExperimento << " -> " << TExpCompleto << endl
@@ -99,7 +103,7 @@ void RegistrarTresyDosEstados(){
 		archivo << registroMin[0][i] << " " << registroMin[1][i] << endl;
 	}
 	archivo << "-1" << endl;
-
+	
 	// Indicamos fin del reporte y versión con el que se realizó
 	archivo << endl << endl << "> Report made with " << ATCRevision << " - rivel_co" << endl
 			<< endl

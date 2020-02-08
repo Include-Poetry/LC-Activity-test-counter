@@ -72,7 +72,14 @@ void ConteoTresyDosEstados(){
 			registro[0][i] = 4;
 			ConsoleColor[6] = '8';
 		} else {
-			registro[0][i] = i > 0 ? 5 : 1;
+			if (i>0){
+				registro[0][i] = 5;
+			} else {
+				// Se maneja de esta forma en caso de ingresar un caracter desconocido al inicio
+				// se da por hecho que entra en el espacio B, se registra y muestra
+				registro[0][i] = 1;	
+				ConsoleColor[7] = 'e';
+			}
 			ConsoleColor[6] = '0';
 		}
 		system(ConsoleColor.c_str());		// Marcamos el nuevo color

@@ -20,7 +20,7 @@ using namespace std;
 long long int MayAct, MayInact, tPrimero;
 
 // Versión actual
-string ATCRevision = "Activity Test Counter v0.5";
+string ATCRevision = "Activity Test Counter v0.5.1";
 // Almacenamiento de tiempos en milisegundos
 long long int registro[2][100000];
 long long int registroMin[2][MAX];
@@ -113,6 +113,7 @@ string Comentario = "";
 #include "FAux/AgregarComentario.h"
 #include "FAux/CompactarActividad.h"
 #include "FAux/printPrevious.h"
+#include "FAux/citeFormat.h"
 
 #include "setControls/setControlsEPM.h"
 #include "setControls/setControlsORT.h"

@@ -12,6 +12,10 @@ void RegistrarDosEstados(int ActLat){
 	TiempoTotal = TiempoRealT1();
 	TiempoOficial = min(TiempoTotal, TiempoRegis);
 
+	// Obtenemos e imprimimos la cita
+	string cite = citeFormat();
+	archivo << endl << cite << endl << endl;
+
 	// Mostramos un resumen de los datos
 	archivo << "Animal ID: " << NombreControl << endl
 			<< "Test performed: " << TipoExperimento << " -> " << TExpCompleto << endl

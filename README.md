@@ -254,13 +254,13 @@ Este programa y el concepto fue realizado como una herramienta de apoyo, inicial
 
 > Si te interesa colaborar con esta herramienta sírvete de usar las instancias para reportar [errores o sugerencias](https://github.com/Include-Poetry/LC-Activity-test-counter/issues "Reportar un error o sugerencia") o hacer *fork* y agregar nuevas funcionalidades.
 
-***Más sobre el desarrollador en:*** [Github](https://github.com/Include-Poetry/ "rivel_co").
+***Más sobre el desarrollador en:*** [Github](https://github.com/rivelco/ "rivel_co").
 
 ### Cómo citar este programa
 
 Si este programa te es de utilidad en tu investigación, por favor cítalo utilizando el siguiente formato:
 
-> Velázquez R. (2020). Activity test counter (v0.5.1) [Computer software]. Retrieved from https://github.com/Include-Poetry/LC-Activity-test-counter
+> Velázquez R. (2020). Activity test counter (v0.5.1) [Computer software]. Retrieved from https://github.com/rivelco/LC-Activity-test-counter
 
 ### Licencia
 
